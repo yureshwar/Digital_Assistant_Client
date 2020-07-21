@@ -1,82 +1,80 @@
 'use strict';
-
-var updatedata=false;
-var voicedebug=true; //this variable exists in links.js file also
-var apihost=(voicedebug)?"http://localhost:11080/voiceapi":"https://voicetest.nistapp.com/voiceapi"; //this variable exists in links.js file also
-var cookiename="nist-voice-usersessionid";
+var VoiceDebug=true; //this variable exists in links.js file also
+var APIEndPoint=(VoiceDebug)?"http://localhost:11080/voiceapi":"https://voicetest.nistapp.com/voiceapi"; //this variable exists in links.js file also
+var CookieName="nist-voice-usersessionid";
 var activetabs=[];
-var sessionkey="";
-var sessiondata={sessionkey:"",authenticated:false,authenticationsource:"",authdata:{}};
+var SessionKey="";
+var SessionData={sessionkey:"",authenticated:false,authenticationsource:"",authdata:{}};
 var apikey = 'AIzaSyBeCZ1su0BYG5uGTHqqdg1bczlsubDuDrU';
 
 //login with chrome identity functionality
-function loginwithgoogle(){
-	sessiondata.authenticationsource="google";
+function LoginWithGoogleChrome(){
+	SessionData.authenticationsource="google";
 	chrome.identity.getProfileUserInfo(function (data) {
 		if(data.id!=='' && data.emailid!=="") {
-			sessiondata.authenticated = true;
-			sessiondata.authdata = data;
-			bindauthenticatedaccount();
+			SessionData.authenticated = true;
+			SessionData.authdata = data;
+			BindAuthenticatedAccount();
 		} else {
-			sendsessiondata("Alertmessagedata","UDA: UserID not set. Digital assistant will not work.")
+			SendSessionData("Alertmessagedata","UDA: UserID not set. Digital assistant will not work.")
 		}
 	});
 }
 
-//send the sessiondata to the webpage functionality
-function sendsessiondata(sendaction="Usersessiondata",message=''){
+//send the SessionData to the webpage functionality
+function SendSessionData(sendaction="Usersessiondata", message=''){
 	if(sendaction==="Alertmessagedata"){
 		chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
 			chrome.tabs.sendMessage(tabs[0].id, {action: sendaction, data: JSON.stringify(message)});
 		});
 	} else {
 		chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-			chrome.tabs.sendMessage(tabs[0].id, {action: sendaction, data: JSON.stringify(sessiondata)});
+			chrome.tabs.sendMessage(tabs[0].id, {action: sendaction, data: JSON.stringify(SessionData)});
 		});
 	}
 }
 
-// listen for the requests made from webpage for accessing userdata
+// listen for the requests made from webpage for accessing UserData
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if(request.action === "getusersessiondata")
 	{
-		chrome.storage.local.get([cookiename],function (storedsessiondata) {
+		chrome.storage.local.get([CookieName],function (storedsessiondata) {
 			if(chrome.runtime.lastError){
 
 			} else {
-				if(storedsessiondata.hasOwnProperty("sessionkey")){
-					sessiondata=storedsessiondata;
-					sendsessiondata();
+				if(storedsessiondata.hasOwnProperty("SessionKey")){
+					SessionData=storedsessiondata;
+					SendSessionData();
 				} else {
-					getsessionkey();
+					GetSessionKey();
 				}
 			}
 		});
 
 	} else if(request.action === "authtenicate") {
-		loginwithgoogle();
+		LoginWithGoogleChrome();
 	} else if(request.action === "Debugvalueset"){
-		voicedebug=request.data;
+		VoiceDebug=request.data;
 	}
 });
 
 //storing the data to the chrome storage
-function storesessiondata(){
-	var storagedata={};
-	storagedata[cookiename]=sessiondata;
-	chrome.storage.local.set(storagedata, function() {
+function StoreSessionData(){
+	let StorageData={};
+	StorageData[CookieName]=SessionData;
+	chrome.storage.local.set(StorageData, function() {
 	});
 }
 
-//getting the sessionkey from backend server
-function getsessionkey(){
+//getting the SessionKey from backend server
+function GetSessionKey(){
 	var xhr = new XMLHttpRequest();
-	xhr.open("Get", apihost+"/user/getsessionkey", true);
+	xhr.open("Get", APIEndPoint+"/user/GetSessionKey", true);
 	xhr.onload = function(event){
 		if(xhr.status === 200){
-			sessiondata.sessionkey=xhr.response;
-			storesessiondata();
-			sendsessiondata();
+			SessionData.sessionkey=xhr.response;
+			StoreSessionData();
+			SendSessionData();
 		} else {
 			console.log(xhr.status+" : "+xhr.statusText);
 		}
@@ -84,35 +82,35 @@ function getsessionkey(){
 	xhr.send();
 }
 
-//binding the sessionkey and chrome identity id
-function bindauthenticatedaccount(){
+//binding the SessionKey and chrome identity id
+function BindAuthenticatedAccount(){
 	var xhr = new XMLHttpRequest();
-	var authdata={authid:sessiondata.authdata.id,emailid:sessiondata.authdata.email,authsource:sessiondata.authenticationsource};
-	xhr.open("POST", apihost+"/user/checkauthid", true);
+	var AuthData={authid:SessionData.authdata.id,emailid:SessionData.authdata.email,authsource:SessionData.authenticationsource};
+	xhr.open("POST", APIEndPoint+"/user/checkauthid", true);
 	xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 	xhr.onload = function(event){
 		if(xhr.status === 200){
-			bindaccount(JSON.parse(xhr.response));
+			BindAccount(JSON.parse(xhr.response));
 		} else {
 			console.log(xhr.status+" : "+xhr.statusText);
 		}
 	};
-	xhr.send(JSON.stringify(authdata));
+	xhr.send(JSON.stringify(AuthData));
 }
 
 //binding the session to the authid
-function bindaccount(userauthdata){
+function BindAccount(userauthdata){
 	var xhr = new XMLHttpRequest();
-	var usersessiondata={userauthid:userauthdata.id,usersessionid:sessiondata.sessionkey};
-	xhr.open("POST", apihost+"/user/checkusersession", true);
+	var UserSessionData={userauthid:userauthdata.id,usersessionid:SessionData.sessionkey};
+	xhr.open("POST", APIEndPoint+"/user/checkusersession", true);
 	xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 	xhr.onload = function(event){
 		if(xhr.status === 200){
-			storesessiondata();
-			sendsessiondata("AuthenticatedUsersessiondata");
+			StoreSessionData();
+			SendSessionData("AuthenticatedUsersessiondata");
 		} else {
 			console.log(xhr.status+" : "+xhr.statusText);
 		}
 	};
-	xhr.send(JSON.stringify(usersessiondata));
+	xhr.send(JSON.stringify(UserSessionData));
 }

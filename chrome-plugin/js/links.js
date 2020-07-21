@@ -1,14 +1,14 @@
-let clickObjects = [];
-let sessionID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-const voicedebug = true; //this variable exists in background.js file also
-const POST_INTERVAL = 1000; //in milliseconds, each minute
-const API_URL = (voicedebug) ? "http://localhost:11080/voiceapi" : "https://voicetest.nistapp.com/voiceapi"; //this variable exists in background.js file also
+let ClickObjects = [];
+let SessionID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+const VoiceDebug = true; //this variable exists in background.js file also
+const PostInterval = 1000; //in milliseconds, each minute
+const APIEndPoint = (VoiceDebug) ? "http://localhost:11080/voiceapi" : "https://voicetest.nistapp.com/voiceapi"; //this variable exists in background.js file also
 const EXTENSION_VERSION = true;
-let ignorepatterns = [{"patterntype": "nist-voice", "patternvalue": "any"}];
-let sitepatterns = [];
+let IgnorePatterns = [{"patterntype": "nist-voice", "patternvalue": "any"}];
+let SitePatterns = [];
 /*var xhr = new XMLHttpRequest();
 var domain=window.location.host;
-xhr.open("GET", API_URL+"/domain/patterns?domain="+domain);
+xhr.open("GET", APIEndPoint+"/domain/patterns?domain="+domain);
 // xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 xhr.onload = function(event){
   if(xhr.status == 200){
@@ -35,16 +35,16 @@ if(window.location.host=="mail.google.com") {
   ];
 }
 */
-let udaauthdata={id:null,email: null};
-let removedclickobjects=[];
-let lastmutationtime = 0;
-let lastindextime=0;
+let UDAAuthData={id:null,email: null};
+let RemovedClickObjects=[];
+let LastMutationTime = 0;
+let LastIndexTime=0;
 // adding the click object that is registered via javascript
 EventTarget.prototype.addEventListener = function (addEventListener) {
     return function () {
         if (arguments[0] === "click") {
             let newClickObject = {element: this};
-            addNewElement(newClickObject);
+            AddNewElement(newClickObject);
         }
         addEventListener.call(this, arguments[0], arguments[1], arguments[2]);
     }
@@ -59,43 +59,43 @@ HTMLElement.prototype.addEventListener = function (a, b, c) {
     this.realAddEventListener(a, b, c);
     if (a === "click") {
         let newClickObject = {element: this};
-        addNewElement(newClickObject);
+        AddNewElement(newClickObject);
     }
 };
 
 // adding the clickobjects that were identified.
-function addNewElement(clickObject) {
+function AddNewElement(ClickObject) {
     //checking whether the element is window or not
-    if (clickObject.element === window) {
+    if (ClickObject.element === window) {
         return;
     }
 
-    let tag = clickObject.element.tagName;
+    let tag = ClickObject.element.tagName;
     if (tag && (tag.toLowerCase() === "body" || tag.toLowerCase() === "document" || tag.toLowerCase() === "window" || tag.toLowerCase() === "html")) {
         return;
     }
 
-    for (var i = 0; i < clickObjects.length; i++) {
-        if (clickObjects[i].element === clickObject.element) {
+    for (var i = 0; i < ClickObjects.length; i++) {
+        if (ClickObjects[i].element === ClickObject.element) {
             //todo, discuss , how better to call actions, if multiple actions should be stored, or selector better.
             return;
         }
     }
 
-    /*clickObject.text = clickObject.element.innerText;
-    if (clickObject.text === undefined || clickObject.text.length === 0) {
+    /*ClickObject.text = ClickObject.element.innerText;
+    if (ClickObject.text === undefined || ClickObject.text.length === 0) {
         //return;
     }*/
-    clickObject.id = clickObjects.length;
-    clickObjects.push(clickObject);
+    ClickObject.id = ClickObjects.length;
+    ClickObjects.push(ClickObject);
 }
 
 // processing node from mutation and then send to clickbojects addition
-function processNode(node) {
+function ProcessNode(node) {
     var processchildren = true;
     if (node.onclick != undefined) {
         let newClickObject = {element: node};
-        addNewElement(newClickObject);
+        AddNewElement(newClickObject);
     }
 
     // switched to switch case condition from if condition
@@ -104,21 +104,21 @@ function processNode(node) {
         switch (node.tagName.toLowerCase()) {
             case 'a':
                 if(node.href !== undefined){
-                    addNewElement(newClickObject);
+                    AddNewElement(newClickObject);
                 }
                 break;
             case 'input':
             case 'textarea':
             case 'option':
             case 'select':
-                addNewElement(newClickObject);
+                AddNewElement(newClickObject);
                 break;
         }
     }
 
     if(node.classList && node.classList.contains("dropdown-toggle")){
         let newClickObject = {element: node};
-        addNewElement(newClickObject);
+        AddNewElement(newClickObject);
     }
 
     //processing site patterns and adding to the clickobjects
@@ -138,7 +138,7 @@ function processNode(node) {
                 for (var ignorenodeindex = 0; ignorenodeindex < ignorepatterns.length; ignorenodeindex++) {
                     var ignorenodemap = ignorepatterns[ignorenodeindex];
                     if (attributemap.nodeName.toString().toLowerCase() === ignorenodemap.patterntype.toLowerCase() && (attributemap.nodeValue.toString().toLowerCase() === ignorenodemap.patternvalue.toString().toLowerCase() || ignorenodemap.patternvalue.toString().toLowerCase() === "any")) {
-                        processRemovedNode(node);
+                        ProcessRemovedNode(node);
                         processchildren = false;
                         addtoclick = false;
                     }
@@ -146,40 +146,40 @@ function processNode(node) {
             }
             if (addtoclick) {
                 let newClickObject = {element: node, action: null};
-                addNewElement(newClickObject);
+                AddNewElement(newClickObject);
             }
         }
     }*/
 
     if (node.children && processchildren) {
         for (var i = 0; i < node.children.length; i++) {
-            processNode(node.children[i]);
+            ProcessNode(node.children[i]);
         }
     }
 }
 
 // removal of clickbojects via mutation observer
-function processRemovedNode(node) {
-    for (var j = 0; j < clickObjects.length; j++) {
-        if (node.isEqualNode(clickObjects[j].element)){
+function ProcessRemovedNode(node) {
+    for (var j = 0; j < ClickObjects.length; j++) {
+        if (node.isEqualNode(ClickObjects[j].element)){
             let addtoremovenodes=true;
             removedclickobjectcounter:
-            for(var k=0;k<removedclickobjects.length;k++){
-                if(node.isEqualNode(removedclickobjects[k].element)){
+            for(var k=0; k<RemovedClickObjects.length; k++){
+                if(node.isEqualNode(RemovedClickObjects[k].element)){
                     addtoremovenodes=false;
                     break removedclickobjectcounter;
                 }
             }
             if(addtoremovenodes) {
-                removedclickobjects.push({element: clickObjects[j].element});
+                RemovedClickObjects.push({element: ClickObjects[j].element});
             }
-            clickObjects.splice(j, 1);
+            ClickObjects.splice(j, 1);
             break;
         }
     }
     if (node.children) {
         for (var i = 0; i < node.children.length; i++) {
-            processRemovedNode(node.children[i]);
+            ProcessRemovedNode(node.children[i]);
         }
     }
 }
@@ -188,14 +188,14 @@ function processRemovedNode(node) {
 var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.removedNodes.length) {
-            [].some.call(mutation.removedNodes, processRemovedNode);
+            [].some.call(mutation.removedNodes, ProcessRemovedNode);
         }
         if (!mutation.addedNodes.length) {
             return;
         }
-        [].some.call(mutation.addedNodes, processNode);
+        [].some.call(mutation.addedNodes, ProcessNode);
     });
-    lastmutationtime=Date.now();
+    LastMutationTime=Date.now();
 });
 
 // starting the mutation observer

@@ -1,103 +1,110 @@
 /* 
-Voice plugin Javascript SDK Library
+Digital Assistant Javascript SDK Library
 IMPORTANT NOTE: Copying this library and hosting it locally is strongly discouraged.
  */
 // creating the sdk variable
-if (typeof Voicepluginsdk === 'undefined') {
+if (typeof DigitalAssistantSDK === 'undefined') {
 	var badBrowser=false;
 	if(navigator.appName.indexOf("Internet Explorer") !== -1){
 		badBrowser=(navigator.appVersion.indexOf("MSIE 1") === -1);
 	}
-	var speechrecognitionavailable=false;
-	var voiceRecognition;
+	let SpeechRecognitionAvailable=false;
+	let VoiceRecognition;
 
-	// initializing voice recognition library
+	// initializing voice Recognition library
 	if(!window.hasOwnProperty("webkitSpeechRecognition")){
-		speechrecognitionavailable=false;
+		SpeechRecognitionAvailable=false;
 	} else {
-		speechrecognitionavailable=true;
-		voiceRecognition = window.webkitSpeechRecognition;
-		// speechrecognitionavailable=false;
+		SpeechRecognitionAvailable=true;
+		VoiceRecognition = window.webkitSpeechRecognition;
+		// SpeechRecognitionAvailable=false;
 	}
 
 	// listening for user session data from extension call
 	document.addEventListener("UserSessionkey", function(data) {
-		// Voicepluginsdk.createsession(data.detail.data);
+		// DigitalAssistantSDK.createsession(data.detail.data);
 	});
 
 	document.addEventListener("Usersessiondata", function(data) {
-		Voicepluginsdk.createsession(JSON.parse(data.detail.data));
+		DigitalAssistantSDK.CreateSession(JSON.parse(data.detail.data));
 	});
 
 	document.addEventListener("AuthenticatedUsersessiondata", function(data) {
-		Voicepluginsdk.createsession(JSON.parse(data.detail.data));
-		Voicepluginsdk.openmodal(true);
+		DigitalAssistantSDK.CreateSession(JSON.parse(data.detail.data));
+		DigitalAssistantSDK.OpenModal(true);
 	});
 
 	document.addEventListener("Alertmessagedata", function(data) {
 		alert(JSON.parse(data.detail.data));
 	});
 
-	var debugsetevent = new CustomEvent("Debugsetevent", {detail: {data: {action:'Debugvalueset',value:voicedebug}}, bubbles: false, cancelable: false});
-	document.dispatchEvent(debugsetevent);
+	const DebugSetEvent = new CustomEvent("Debugsetevent", {
+		detail: {
+			data: {
+				action: 'Debugvalueset',
+				value: VoiceDebug
+			}
+		}, bubbles: false, cancelable: false
+	});
+	document.dispatchEvent(DebugSetEvent);
 
 	// initializing the sdk variable need to change to a new variable in future.
-	var Voicepluginsdk = {
-		sdkUrl: "/",
-		apihost: (voicedebug)?"http://localhost:11080/voiceapi":"https://voicetest.nistapp.com/voiceapi",
-		totalScripts: 0,
-		scriptsCompleted:0,
-		totalotherScripts:0,
-		totalotherScriptsCompleted:0,
-		functionsToRunWhenReady: [],
-		jqueryready: false,
+	var DigitalAssistantSDK = {
+		SDKUrl: "/",
+		APIEndPoint: APIEndPoint,
+		TotalScripts: 0,
+		ScriptsCompleted:0,
+		TotalOtherScripts:0,
+		TotalOtherScriptsCompleted:0,
+		FunctionsToRunWhenReady: [],
+		JqueryReady: false,
 		request:{},
-		userdata:{},
-		ignoreelements : ["script","h1","h2","h3","link","noscript","style"],
-		availablenavtabs : [],
-		htmlindex : [],
-		textfromspeech : "",
-		nodeid : 0,
-		speechrecognitionavailable: false,
+		UserData:{},
+		IgnoreElements : ["script","h1","h2","h3","link","noscript","style"],
+		AvailableNavTabs : [],
+		IndexedNodes : [],
+		TextFromSpeech : "",
+		NodeId : 0,
+		SpeechRecognitionAvailable: false,
 		SpeechRecognition : [],
-        recognition : {},
-		targetNode : [],
-		updatesOccur : true,
-		updatecounter : 0,
-		lastupdatecounter : 0,
-		menuitems: [],
-		extensionpath:document.currentScript.src.toString().replace("js/Voicepluginsdk.js",""),
-		indexnewnodes:false,
-		previousurl:"",
-		currenturl:"",
-		sessionID:"",
-		sessiondata:{sessionkey:"",authenticated:false,authenticationsource:"",authdata:{}},
-		cookiename:"nist-voice-usersessionid",
-		recordingcookiename:"nistsequence",
-		recordedsequenceids:[],
-		recordclicknodecookiename:"nistclickrecord",
-		cookieexpires:365,
-		addedtoslidingdiv:false,
-		elastic:{apiurl:"http://localhost:9200",indexname:"nistapp",currentpage:0,querystring:""},
-		navigationcookiename:"nistnavshow",
-		autoplay:false,
-		processcount:0,
-		totalcount:0,
-		rerenderhtml:true,
-		processingnodes:false,
-		processedclickobjectscount:0,
-		recording:false,
-		addcustomcssdomains:["app.vantagecircle.com","dashboard.vantagecircle.com"],
-		containersections:[],
-		introjs:[],
-		introjstotalsteps:0,
-		introjscurrentstepnumber:0,
-		introjsaddedstepnodes:[],
-		lastclickednode:'',
-		lastclickedtime:'',
-		maxstringlength:40,
-		confirmednode:false,
-		inarray:function(value,object){
+        Recognition : {},
+		TargetNode : [],
+		UpdatesOccur : true,
+		UpdateCounter : 0,
+		LastUpdateCounter : 0,
+		MenuItems: [],
+		ExtensionPath:document.currentScript.src.toString().replace("js/DigitalAssistantSDK.js",""),
+		IndexNewNodes:false,
+		PreviousUrl:"",
+		CurrentUrl:"",
+		SessionID:"",
+		SessionData:{sessionkey:"",authenticated:false,authenticationsource:"",authdata:{}},
+		CookieName:"nist-voice-usersessionid",
+		RecordingCookieName:"nistsequence",
+		RecordedSequenceIDs:[],
+		RecordClickNodeCookieName:"nistclickrecord",
+		CookieExpires:365,
+		AddedToSlidingDiv:false,
+		Elastic:{apiurl:"http://localhost:9200",indexname:"nistapp",currentpage:0,querystring:""},
+		NavigationCookieName:"nistnavshow",
+		AutoPlay:false,
+		ProcessCount:0,
+		TotalCount:0,
+		RerenderHtml:true,
+		ProcessingNodes:false,
+		ProcessedClickObjectsCount:0,
+		Recording:false,
+		AddCustomCssDomains:["app.vantagecircle.com","dashboard.vantagecircle.com"],
+		ContainerSections:[],
+		IntroJS:[],
+		IntroJsTotalSteps:0,
+		IntroJsCurrentStepNumber:0,
+		IntroJsAddedStepNodes:[],
+		LastClickedNode:'',
+		LastClickedTime:'',
+		MaxStringLength:40,
+		ConfirmedNode:false,
+		InArray:function(value, object){
 			return jQuery.inArray(value, object);
 		},
 		// constructor for the sdk class which will be initialized on loading of the variable.
@@ -105,16 +112,16 @@ if (typeof Voicepluginsdk === 'undefined') {
 			// loading jquery if not available
 			if(typeof jQuery === "undefined") {
 				// loading jquery from installed extension path
-				this.loadScript(this.extensionpath+"js/jquery-3.4.1.min.js");
+				this.LoadScript(this.ExtensionPath+"js/jquery-3.4.1.min.js");
 			} else {
 				// load other scripts if jquery available
-				this.jqueryready=true;
-				this.otherscripts();
+				this.JqueryReady=true;
+				this.OtherScripts();
 			}
 		},
 
 		//adding required script functionality to the head of the page.
-		loadScript: function(url) {
+		LoadScript: function(url) {
 
 			var script = document.createElement("script");
 			script.type = "text/javascript";
@@ -123,20 +130,20 @@ if (typeof Voicepluginsdk === 'undefined') {
 				script.onreadystatechange = function(){
 					if (script.readyState === "loaded" || script.readyState === "complete"){
 						script.onreadystatechange = null;
-						Voicepluginsdk.scriptsCompleted++;
+						DigitalAssistantSDK.ScriptsCompleted++;
 						if (typeof jQuery !== 'undefined') {
-							this.jqueryready=true;
-							Voicepluginsdk.otherscripts();
+							this.JqueryReady=true;
+							DigitalAssistantSDK.OtherScripts();
 						}
 					}
 				};
 			} else {
 				script.onload = function(){
-					Voicepluginsdk.scriptsCompleted++;
+					DigitalAssistantSDK.ScriptsCompleted++;
 					if (typeof jQuery !== 'undefined') {
-						this.jqueryready=true;
+						this.JqueryReady=true;
 						if(this.ready !== true){
-							Voicepluginsdk.otherscripts();
+							DigitalAssistantSDK.OtherScripts();
 						}
 					}
 				};
@@ -145,7 +152,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			script.src = url;
 			document.getElementsByTagName("head")[0].appendChild(script);
 		},
-		loadOtherScript: function(url) {
+		LoadOtherScript: function(url) {
 			var script = document.createElement("script");
 			script.type = "text/javascript";
 			script.src = url;
@@ -153,52 +160,52 @@ if (typeof Voicepluginsdk === 'undefined') {
 				script.onreadystatechange = function(){
 					if (script.readyState === "loaded" || script.readyState === "complete"){
 						script.onreadystatechange = null;
-						Voicepluginsdk.totalotherScriptsCompleted++;
-						if (Voicepluginsdk.totalotherScriptsCompleted === Voicepluginsdk.totalotherScripts) {
-							Voicepluginsdk.allReady();
+						DigitalAssistantSDK.TotalOtherScriptsCompleted++;
+						if (DigitalAssistantSDK.TotalOtherScriptsCompleted === DigitalAssistantSDK.TotalOtherScripts) {
+							DigitalAssistantSDK.AllReady();
 						}
 					}
 				};
 			} else {
 				script.onload = function(){
-					Voicepluginsdk.totalotherScriptsCompleted++;
-					if (Voicepluginsdk.totalotherScriptsCompleted === Voicepluginsdk.totalotherScripts) {
-						Voicepluginsdk.allReady();
+					DigitalAssistantSDK.TotalOtherScriptsCompleted++;
+					if (DigitalAssistantSDK.TotalOtherScriptsCompleted === DigitalAssistantSDK.TotalOtherScripts) {
+						DigitalAssistantSDK.AllReady();
 					}
 				};
 			}
 			document.body.appendChild(script);
 		},
-		loadCssScript: function(url) {
+		LoadCssScript: function(url) {
 			var script = document.createElement("link");
 			script.rel="stylesheet";
 			script.type = "text/css";
 			script.href = url;
 			document.getElementsByTagName("head")[0].appendChild(script);
 		},
-		otherscripts: function(){
-			this.totalotherScripts=1;
-			this.loadCssScript(this.extensionpath+"css/extension.css");
-			this.loadOtherScript(this.extensionpath+"js/domJSON.js");
-			if(this.inarray(window.location.host,this.addcustomcssdomains) !== -1){
-				this.loadCssScript(this.extensionpath+"css/"+window.location.host+".css");
+		OtherScripts: function(){
+			this.TotalOtherScripts=1;
+			this.LoadCssScript(this.ExtensionPath+"css/extension.css");
+			this.LoadOtherScript(this.ExtensionPath+"js/domJSON.js");
+			if(this.InArray(window.location.host,this.AddCustomCssDomains) !== -1){
+				this.LoadCssScript(this.ExtensionPath+"css/"+window.location.host+".css");
 			}
 			if(typeof introJs === 'undefined'){
-				this.totalotherScripts++;
-				this.loadOtherScript(this.extensionpath+"js/intro.min.js");
-				this.loadCssScript(this.extensionpath+"css/introjs.min.css");
+				this.TotalOtherScripts++;
+				this.LoadOtherScript(this.ExtensionPath+"js/intro.min.js");
+				this.LoadCssScript(this.ExtensionPath+"css/introjs.min.css");
 			}
 			if(typeof swal === 'undefined'){
-				this.loadOtherScript(this.extensionpath+"js/sweetalert.min.js");
+				this.LoadOtherScript(this.ExtensionPath+"js/sweetalert.min.js");
 			}
 		},
-		allReady: function() {
+		AllReady: function() {
 			// execute the parsing method after everything is ready.
-			this.onReady();
+			this.OnReady();
 		},
-		queueOrRun: function(fname, param1, param2) {
+		QueueOrRun: function(fname, param1, param2) {
 			if (!this.ready) {
-				this.functionsToRunWhenReady.push({
+				this.FunctionsToRunWhenReady.push({
 					functionSelf: this[fname],
 					param1: param1,
 					param2: param2
@@ -207,42 +214,42 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 			this[fname](param1, param2)
 		},
-		onContent: function (data) {},
-		onComplete: function () {},
-		onReady: function () {
+		OnContent: function (data) {},
+		OnComplete: function () {},
+		OnReady: function () {
 
 			// check user session exists and create if not available
-			this.checkuserkeyexists();
+			this.CheckUserKeyExists();
 
 
-			this.introjs=introJs().setOptions({showStepNumbers:false,showBullets:false,showProgress:false,exitOnOverlayClick:false,exitOnEsc:false,keyboardNavigation:false,doneLabel:'Continue',skipLabel: 'Exit'}).oncomplete(function (){Voicepluginsdk.showhtml();});
+			this.IntroJS=introJs().setOptions({showStepNumbers:false,showBullets:false,showProgress:false,exitOnOverlayClick:false,exitOnEsc:false,keyboardNavigation:false,doneLabel:'Continue',skipLabel: 'Exit'}).oncomplete(function (){DigitalAssistantSDK.ShowHtml();});
 
-			// adding speech recognition functionality based on the library availability
-			if(speechrecognitionavailable){
-				this.recognition = new voiceRecognition();
-				this.speechrecognitionavailable = true;
-				
-				this.recognition.onstart = function() {
+			// adding speech Recognition functionality based on the library availability
+			if(SpeechRecognitionAvailable){
+				this.Recognition = new VoiceRecognition();
+				this.SpeechRecognitionAvailable = true;
+
+				this.Recognition.onstart = function() {
 					textfromspeech = "";
 				};
 
-				this.recognition.onspeechend = function() {
+				this.Recognition.onspeechend = function() {
 
 				};
 
-				this.recognition.onerror = function(event) {
+				this.Recognition.onerror = function(event) {
 					if(event.error === 'no-speech') {
 						alert('No speech was detected. Try again.');
 					}
 				};
 
-				this.recognition.onresult = function(event) {
+				this.Recognition.onresult = function(event) {
 					if (event.results.length > 0) {
 						var current = event.resultIndex;
 						// Get a transcript of what was said.
 						var transcript = event.results[current][0].transcript;
 						jQuery("#voicesearchinput").val(transcript);
-						Voicepluginsdk.searchinelastic();
+						DigitalAssistantSDK.SearchInElastic();
 					}
 				};
 			}
@@ -252,9 +259,9 @@ if (typeof Voicepluginsdk === 'undefined') {
 			// listen for when to start the indexing of the dom based on the clicknodes availability
 			document.addEventListener("Indexnodes", function(data) {
 				if(data.detail.data==="indexclicknodes") {
-					Voicepluginsdk.indexclicknodes();
+					DigitalAssistantSDK.IndexClickNodes();
 				} else if(data.detail.data==="indexnewclicknodes") {
-					Voicepluginsdk.indexnewclicknodes();
+					DigitalAssistantSDK.indexnewclicknodes();
 				}
 			});
 
@@ -263,86 +270,90 @@ if (typeof Voicepluginsdk === 'undefined') {
 			//      This still produces some discrepancy where it hangs up the web page.
 			//      This needs to be improved at some point.
 			window.addEventListener('load', (event) => {
-				Voicepluginsdk.modifybodyhtml();
+				DigitalAssistantSDK.ModifyBodyHtml();
 			});
 		},
-		checkuserkeyexists:function(){
-			var sessiondata=this.getstoragedata(this.cookiename);
-			if(sessiondata){
-				var parsedsessiondata=JSON.parse(sessiondata);
-				this.sessiondata=parsedsessiondata;
-				this.sessionID=parsedsessiondata.sessionkey;
-				this.recorddocumentclick();
+		CheckUserKeyExists:function(){
+			let SessionData=this.GetStorageData(this.CookieName);
+			if(SessionData){
+				const ParsedSessionData = JSON.parse(SessionData);
+				this.SessionData=ParsedSessionData;
+				this.SessionID=ParsedSessionData.sessionkey;
+				this.RecordDocumentClick();
 			}else{
-				var sessionevent = new CustomEvent("RequestSessiondata", {detail: {data: "getusersessiondata"}, bubbles: false, cancelable: false});
-				document.dispatchEvent(sessionevent);
+				const SessionEvent = new CustomEvent("RequestSessiondata", {
+					detail: {data: "getusersessiondata"},
+					bubbles: false,
+					cancelable: false
+				});
+				document.dispatchEvent(SessionEvent);
 			}
 		},
-		createsession:function(data){
-			var sessiondata=this.getstoragedata(this.cookiename);
-			if(sessiondata){
-				this.sessiondata=data;
-				this.sessionID=data.sessionkey;
-				this.createstoragedata(this.cookiename,JSON.stringify(data));
+		CreateSession:function(data){
+			const SessionData = this.GetStorageData(this.CookieName);
+			if(SessionData){
+				this.SessionData=data;
+				this.SessionID=data.sessionkey;
+				this.CreateStorageData(this.CookieName,JSON.stringify(data));
 			}else{
-				sessionID=data.sessionkey;
-				this.sessiondata=data;
-				this.sessionID=data.sessionkey;
-				this.createstoragedata(this.cookiename,JSON.stringify(data));
+				SessionID=data.sessionkey;
+				this.SessionData=data;
+				this.SessionID=data.sessionkey;
+				this.CreateStorageData(this.CookieName,JSON.stringify(data));
 			}
-			this.recorddocumentclick();
+			this.RecordDocumentClick();
 		},
-		modifybodyhtml:function(){
+		ModifyBodyHtml:function(){
 			var html='<div id="nistBtn" nist-voice="true"></div><div id="nist-steps-content" style="display: none;"><div id="voicemodalhtml" nist-voice="true"></div></div>';
 
 			jQuery(document.body).prepend(html);
 
 			if(typeof isvoicesdk === 'undefined') {
 				jQuery(window).trigger('resize').promise().done(function () {
-					Voicepluginsdk.indexclicknodes();
-					Voicepluginsdk.addbuttonhtml();
+					DigitalAssistantSDK.IndexClickNodes();
+					DigitalAssistantSDK.AddButtonHtml();
 				});
 			} else {
-				Voicepluginsdk.indexclicknodes();
-				Voicepluginsdk.addbuttonhtml();
+				DigitalAssistantSDK.IndexClickNodes();
+				DigitalAssistantSDK.AddButtonHtml();
 			}
 			setInterval(function () {
-				if(lastindextime!==0 && lastindextime<lastmutationtime) {
-					Voicepluginsdk.indexnewclicknodes();
+				if(LastIndexTime!==0 && LastIndexTime<LastMutationTime) {
+					DigitalAssistantSDK.indexnewclicknodes();
 				}
-			},POST_INTERVAL);
+			},PostInterval);
 		},
-		addbuttonhtml:function(){
+		AddButtonHtml:function(){
 			jQuery("#nistBtn").unbind("click").html("");
-			var buttonhtml='<img src="'+this.extensionpath+'assets/uda-logo.png" width="50px" height="50px" nist-voice="true">';
+			var buttonhtml='<img src="'+this.ExtensionPath+'assets/uda-logo.png" width="50px" height="50px" nist-voice="true">';
 			var modal =jQuery("#nistBtn");
 			modal.append(buttonhtml);
 			modal.click(function () {
-				Voicepluginsdk.openmodal(true);
+				DigitalAssistantSDK.OpenModal(true);
 			});
-			if(this.rerenderhtml) {
-				this.showhtml();
+			if(this.RerenderHtml) {
+				this.ShowHtml();
 			}
 		},
-		addvoicesearchmodal:function(addnisticon=true){
-			// var recbtn ='	   <button nist-voice="true" id="nistvoicerecbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.extensionpath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button>';
+		AddVoiceSearchModal:function(addnisticon=true){
+			// var recbtn ='	   <button nist-voice="true" id="nistvoicerecbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button>';
 			var recbtn ='	   <button nist-voice="true" id="nistvoiceadvbtn" class="voice-record-img"><span nist-voice="true">Advanced</span></button>';
 
 			if(!addnisticon){
-				recbtn ='	   <button nist-voice="true" id="nistvoicerecstpbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.extensionpath+'assets/voice-stop.png"> <span nist-voice="true">Stop</span></button>';
+				recbtn ='	   <button nist-voice="true" id="nistvoicerecstpbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-stop.png"> <span nist-voice="true">Stop</span></button>';
 			}
 			var html =  '<div class="voice-redmine-rght">'+
 						'   <div class="">'+
 						'	    <div class="voice-hng-left"><h3>How Can I Help You Today?</h3></div>'+
-						'	    <div class="voice-hng-right"><img id="closenistmodal" style="vertical-align:middle;" src="'+this.extensionpath+'assets/voice-close.png"></div>'+
+						'	    <div class="voice-hng-right"><img id="closenistmodal" style="vertical-align:middle;" src="'+this.ExtensionPath+'assets/voice-close.png"></div>'+
 						'       <div class="nist-clear"></div>'+
 						'   </div>'+
 						'	<div class="voice-red-hr-line"></div>'+
 						// '	<button class="voice-suggesion-lbl">Create a new issue</button><button class="voice-suggesion-lbl">Assign an issue to Ajay</button><button class="voice-suggesion-lbl">Show list of issues assigned to me</button><br>'+
 						'	<div class="voice-srch-bg">'+
-						'		<span class="voice-srch"><img src="'+this.extensionpath+'assets/voice-search.png"></span><input type="search" class="voice-srch-fld" nist-voice="true" id="voicesearchinput" placeholder="Search..." />' +
-						'       <span id="nist-voice-icon-start" class="voice-voice-srch" nist-voice="true"><img nist-voice="true" src="'+this.extensionpath+'assets/voice-voice.png" /></span>'+
-						'       <span style="display:none;" class="voice-voice-srch" id="nist-voice-icon-stop" nist-voice="true"><img src="'+this.extensionpath+'assets/stop.png" nist-voice="true" /></span>' +
+						'		<span class="voice-srch"><img src="'+this.ExtensionPath+'assets/voice-search.png"></span><input type="search" class="voice-srch-fld" nist-voice="true" id="voicesearchinput" placeholder="Search..." />' +
+						'       <span id="nist-voice-icon-start" class="voice-voice-srch" nist-voice="true"><img nist-voice="true" src="'+this.ExtensionPath+'assets/voice-voice.png" /></span>'+
+						'       <span style="display:none;" class="voice-voice-srch" id="nist-voice-icon-stop" nist-voice="true"><img src="'+this.ExtensionPath+'assets/stop.png" nist-voice="true" /></span>' +
 						'	</div>'+
 						'   <div>'+
 								recbtn +
@@ -352,27 +363,27 @@ if (typeof Voicepluginsdk === 'undefined') {
 						'</div>';
 			jQuery("#voicemodalhtml").html(html);
 			jQuery("#closenistmodal").click(function(){
-				Voicepluginsdk.closemodal();
+				DigitalAssistantSDK.CloseModal();
 			});
 			jQuery("#voicesearch").click(function(){
-				Voicepluginsdk.searchinelastic();
+				DigitalAssistantSDK.SearchInElastic();
 			});
 			jQuery("#voicesearchinput").keydown(function (e) {
 				if (e.keyCode === 13) {
 					jQuery("#nistvoicesearchresults").html("");
-					Voicepluginsdk.searchinelastic();
+					DigitalAssistantSDK.SearchInElastic();
 					return false;
 				}
 			});
-			if(speechrecognitionavailable){
+			if(SpeechRecognitionAvailable){
 				jQuery("#nist-voice-icon-start").click(function () {
 					jQuery("#nistvoicesearchresults").html("");
-					Voicepluginsdk.recognition.start();
+					DigitalAssistantSDK.Recognition.start();
 					jQuery("#nist-voice-icon-start").hide();
 					jQuery("#nist-voice-icon-stop").show();
 				});
 				jQuery("#nist-voice-icon-stop").click(function () {
-					Voicepluginsdk.recognition.stop();
+					DigitalAssistantSDK.Recognition.stop();
 					jQuery("#nist-voice-icon-stop").hide();
 					jQuery("#nist-voice-icon-start").show();
 				});
@@ -382,20 +393,20 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 			if(addnisticon) {
 				/*jQuery("#nistvoicerecbtn").click(function () {
-					Voicepluginsdk.gettimestamp("start");
+					DigitalAssistantSDK.gettimestamp("start");
 				});*/
 				jQuery("#nistvoiceadvbtn").click(function () {
-					Voicepluginsdk.showadvancedhtml();
+					DigitalAssistantSDK.ShowAdvancedHtml();
 				});
 			} else {
 				jQuery("#nistvoicerecstpbtn").click(function () {
-					Voicepluginsdk.gettimestamp("stop");
+					DigitalAssistantSDK.GetTimeStamp("stop");
 				});
 			}
 		},
 		//opening the UDA screen
-		openmodal:function(focus=false){
-			if(this.sessiondata.authenticated) {
+		OpenModal:function(focus=false){
+			if(this.SessionData.authenticated) {
 				jQuery("#nistBtn").hide();
 				jQuery('#nist-steps-content').show();
 				jQuery("#nistModal").css("display", "block");
@@ -404,12 +415,12 @@ if (typeof Voicepluginsdk === 'undefined') {
 				if (focus) {
 					searchinput.focus();
 				}
-				if(this.inarray(window.location.host,this.addcustomcssdomains) !== -1) {
+				if(this.InArray(window.location.host,this.AddCustomCssDomains) !== -1) {
 					let bodychildren = document.body.childNodes;
 					if (bodychildren.length > 0) {
 						bodychildren.forEach(function (childnode, childnodeindex) {
 							if (childnode.classList && childnode.classList.contains("container")) {
-								Voicepluginsdk.containersections.push(childnodeindex);
+								DigitalAssistantSDK.ContainerSections.push(childnodeindex);
 								childnode.classList.remove("container");
 							}
 							if (childnode.nodeType === Node.ELEMENT_NODE && (childnode.id !== 'nistBtn' && childnode.id !== 'nist-steps-content') && childnode.nodeName.toLowerCase() !== 'script' && childnode.nodeName.toLowerCase() !== 'noscript' && childnode.nodeName.toLowerCase() !== 'style') {
@@ -426,18 +437,18 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 		},
 		//closing the UDA screen
-		closemodal:function(){
+		CloseModal:function(){
 			jQuery("#nistvoiceadvbtn").show();
 			jQuery('#nist-steps-content').hide();
 			jQuery("#nistModal").css("display","none");
 			jQuery("#nistvoicesearchresults").html("");
 			jQuery("#nistrecordresults").html("");
-			this.recordedsequenceids=[];
+			this.RecordedSequenceIDs=[];
 			jQuery("#nistBtn").show();
 			var navcookiedata = {shownav: false, data: {}, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:''};
-			this.createstoragedata(this.navigationcookiename,JSON.stringify(navcookiedata));
-			this.cancelrecordingsequence(false);
-			if(this.inarray(window.location.host,this.addcustomcssdomains) !== -1) {
+			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata));
+			this.CancelRecordingSequence(false);
+			if(this.InArray(window.location.host,this.AddCustomCssDomains) !== -1) {
 				let bodychildren = document.body.childNodes;
 				if (bodychildren.length > 0) {
 					bodychildren.forEach(function (childnode, childnodeindex) {
@@ -446,7 +457,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 								childnode.classList.remove("nist-original-content");
 							}
 						}
-						if (Voicepluginsdk.containersections.length > 0 && Voicepluginsdk.inarray(childnodeindex, Voicepluginsdk.containersections) !== -1) {
+						if (DigitalAssistantSDK.ContainerSections.length > 0 && DigitalAssistantSDK.InArray(childnodeindex, DigitalAssistantSDK.ContainerSections) !== -1) {
 							childnode.classList.add("container");
 						}
 					});
@@ -454,103 +465,103 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 		},
 		//render the required html for showing up the proper html
-		showhtml:function(){
-			this.rerenderhtml=false;
+		ShowHtml:function(){
+			this.RerenderHtml=false;
 			var addnisticon=true;
-			var checkrecording = this.getstoragedata(this.recordingcookiename);
+			var checkrecording = this.GetStorageData(this.RecordingCookieName);
 			if(checkrecording){
 				var checkrecordingdata=JSON.parse(checkrecording);
 				if(checkrecordingdata.hasOwnProperty("recording") && checkrecordingdata.recording){
 					addnisticon=false;
-					this.recording=true;
-					this.openmodal(false);
+					this.Recording=true;
+					this.OpenModal(false);
 				}
 			}
 			if(addnisticon){
-				this.addvoicesearchmodal(addnisticon);
-				var navigationcookie=this.getstoragedata(this.navigationcookiename);
+				this.AddVoiceSearchModal(addnisticon);
+				var navigationcookie=this.GetStorageData(this.NavigationCookieName);
 				if(navigationcookie){
 					var navigationcookiedata = JSON.parse(navigationcookie);
 					if(navigationcookiedata.shownav) {
-						this.openmodal();
+						this.OpenModal();
 						if(navigationcookiedata.autoplay){
-							this.autoplay=true;
+							this.AutoPlay=true;
 						}
-						this.showselectedrow(navigationcookiedata.data,navigationcookiedata.data.id,true, navigationcookiedata);
+						this.ShowSelectedRow(navigationcookiedata.data,navigationcookiedata.data.id,true, navigationcookiedata);
 					}
 				}
 			} else {
-				this.addvoicesearchmodal(addnisticon);
-				this.showrecordedresults();
+				this.AddVoiceSearchModal(addnisticon);
+				this.ShowRecordedResults();
 			}
 		},
 		// indexing all nodes after all the clicknodes are available
-		indexclicknodes: function(){
-			this.processcount=clickObjects.length;
-			this.previousurl=this.currenturl=window.location.href;
-			this.processingnodes=true;
+		IndexClickNodes: function(){
+			this.ProcessCount=ClickObjects.length;
+			this.PreviousUrl=this.CurrentUrl=window.location.href;
+			this.ProcessingNodes=true;
 			// indexing method called
-			this.indexdom(document.body);
-			this.processedclickobjectscount=this.processcount;
-			this.totalcount=clickObjects.length;
-			this.processingnodes=false;
-			if(this.processcount<this.totalcount){
+			this.IndexDom(document.body);
+			this.ProcessedClickObjectsCount=this.ProcessCount;
+			this.TotalCount=ClickObjects.length;
+			this.ProcessingNodes=false;
+			if(this.ProcessCount<this.TotalCount){
 				//	todo refine the processing nodes.
 				this.indexnewclicknodes();
 				return;
 			}
-			lastindextime=Date.now();
+			LastIndexTime=Date.now();
 			//send all the indexnodes to server
-			if(this.processcount===this.totalcount) {
+			if(this.ProcessCount===this.TotalCount) {
 				// this.sendtoserver();
 			}
 		},
 		// indexing new clicknodes after new html got loaded
 		indexnewclicknodes:function(){
-			if(this.processingnodes){
+			if(this.ProcessingNodes){
 				return;
 			}
-			this.processcount=clickObjects.length;
-			if(lastindextime!==0 && lastindextime>lastmutationtime){
+			this.ProcessCount=ClickObjects.length;
+			if(LastIndexTime!==0 && LastIndexTime>LastMutationTime){
 				return;
 			}
-			lastindextime=Date.now();
-			this.processingnodes=true;
+			LastIndexTime=Date.now();
+			this.ProcessingNodes=true;
 			this.removefromhtmlindex();
-			this.indexnewnodes=true;
-			this.currenturl=window.location.href;
-			this.indexdom(document.body);
-			this.processedclickobjectscount=this.processcount;
-			this.processingnodes=false;
-			this.totalcount=clickObjects.length;
-			if(this.processcount<this.totalcount){
+			this.IndexNewNodes=true;
+			this.CurrentUrl=window.location.href;
+			this.IndexDom(document.body);
+			this.ProcessedClickObjectsCount=this.ProcessCount;
+			this.ProcessingNodes=false;
+			this.TotalCount=ClickObjects.length;
+			if(this.ProcessCount<this.TotalCount){
 				//todo new nodes added need to reprocess
 				// this.indexnewclicknodes();
 				return;
 			}
 			// send all the indexed nodes to server
-			if(this.processedclickobjectscount===this.totalcount){
+			if(this.ProcessedClickObjectsCount===this.TotalCount){
 				// this.sendtoserver();
 			}
 		},
 		removefromhtmlindex:function(){
-			if(this.htmlindex.length>0){
+			if(this.IndexedNodes.length>0){
 				let newhtmlindex=[];
-				let htmlindexlength=this.htmlindex.length;
+				let htmlindexlength=this.IndexedNodes.length;
 				for(var htmli=0;htmli<htmlindexlength;htmli++) {
-					let checknode=this.htmlindex[htmli];
-					let removedclickobjectslength=removedclickobjects.length;
+					let checknode=this.IndexedNodes[htmli];
+					let removedclickobjectslength=RemovedClickObjects.length;
 					let foundremovedindexednode=-1;
 					removeclickobjectcounter:
 					for (var k = 0; k < removedclickobjectslength; k++) {
-						if(removedclickobjects[k].element === window){
+						if(RemovedClickObjects[k].element === window){
 							continue;
 						}
-						let removedclickobject=removedclickobjects[k].element;
+						let removedclickobject=RemovedClickObjects[k].element;
 
 						if (checknode['element-data'].isEqualNode(removedclickobject)) {
 							if(checknode['element-data'].nodeName.toLowerCase()==='textarea'){
-								// jQuery(checknode['element-data']).unbind('click', Voicepluginsdk.recorduserclick());
+								// jQuery(checknode['element-data']).unbind('click', DigitalAssistantSDK.recorduserclick());
 							}
 							foundremovedindexednode=k;
 							break removeclickobjectcounter;
@@ -559,19 +570,19 @@ if (typeof Voicepluginsdk === 'undefined') {
 					if(foundremovedindexednode===-1){
 						newhtmlindex.push(checknode);
 					} else {
-						removedclickobjects.splice(foundremovedindexednode,1);
+						RemovedClickObjects.splice(foundremovedindexednode,1);
 					}
 				}
-				this.htmlindex=newhtmlindex;
+				this.IndexedNodes=newhtmlindex;
 			}
 		},
 		// indexing functionality for the entire dom
-		indexdom: function( node, ret=false, parentnode="", textlabel="", hasparentnodeclick=false, parentclicknode="" ) {
+		IndexDom: function(node, ret=false, parentnode="", textlabel="", hasparentnodeclick=false, parentclicknode="" ) {
 			switch (node.nodeType) {
 				case Node.ELEMENT_NODE:
 
 					if(!ret && parentnode!=="") {
-						node = this.indexnode(node, parentnode, hasparentnodeclick, false, parentclicknode);
+						node = this.IndexNode(node, parentnode, hasparentnodeclick, false, parentclicknode);
 					}
 
 					node.haschildclick=false;
@@ -589,16 +600,16 @@ if (typeof Voicepluginsdk === 'undefined') {
 						if(childnodes.length>0){
 							for (var i=0;i<childnodes.length;i++){
 								var childnode=childnodes[i];
-								this.nodeid++;
-								if(this.ignoreelements.indexOf(childnode.nodeName.toLowerCase())===-1) {
+								this.NodeId++;
+								if(this.IgnoreElements.indexOf(childnode.nodeName.toLowerCase())===-1) {
 									if(ret){
 										if(textlabel===""){
-											textlabel = this.indexdom(childnode, ret, node, textlabel);
+											textlabel = this.IndexDom(childnode, ret, node, textlabel);
 										}else {
-											textlabel += " " + this.indexdom(childnode, ret, node, textlabel);
+											textlabel += " " + this.IndexDom(childnode, ret, node, textlabel);
 										}
 									} else {
-										node.childNodes[i] = this.indexdom(childnode, ret, node,"", hasparentclick, parentclicknode);
+										node.childNodes[i] = this.IndexDom(childnode, ret, node,"", hasparentclick, parentclicknode);
 										if(node.childNodes[i].hasOwnProperty("hasclick") && node.childNodes[i].hasclick && node.childNodes[i].textContent!==""){
 											node.haschildclick=true;
 										}
@@ -614,9 +625,9 @@ if (typeof Voicepluginsdk === 'undefined') {
 					// add click to node to send what user has clicked.
 					// known scenario that node has parent click
 					if(node.hasOwnProperty("hasclick") && node.hasclick && (node.nodeName.toLowerCase()==="select" || !node.haschildclick)){
-						node=this.addClickToNode(node);
+						node=this.AddClickToNode(node);
 					} else if(node.hasOwnProperty("hasclick") && node.hasclick && node.haschildclick){
-						node=this.addClickToNode(node,true);
+						node=this.AddClickToNode(node,true);
 					}
 
 					break;
@@ -634,7 +645,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 		},
 		// Check for each node and then match it with the available clicknodes which are identified by links.js
-		indexnode: function(node, parentnode, hasparentnodeclick=false, fromdocumentclick=false, parentclicknode=""){
+		IndexNode: function(node, parentnode, hasparentnodeclick=false, fromdocumentclick=false, parentclicknode=""){
 			var elementdata = {"element-type": "", "element-labels" : [], "element-action" : "", "element-path" : "","element-url":"", "element-data":[],"menu-items":[]};
 
 			if(parentnode.classList && parentnode.classList.contains("tab-content")){
@@ -649,22 +660,22 @@ if (typeof Voicepluginsdk === 'undefined') {
 				return node;
 			}
 
-			if(this.htmlindex.length>0){
-				for(var htmli=0;htmli<this.htmlindex.length;htmli++){
-					if(node.isEqualNode(this.htmlindex[htmli]['element-data'])){
+			if(this.IndexedNodes.length>0){
+				for(var htmli=0; htmli<this.IndexedNodes.length; htmli++){
+					if(node.isEqualNode(this.IndexedNodes[htmli]['element-data'])){
 						node.hasclick=true;
 						return node;
 					}
 				}
 			}
 
-			for (var i = 0; i < clickObjects.length; i++) {
-				if(clickObjects[i].element===window){
+			for (var i = 0; i < ClickObjects.length; i++) {
+				if(ClickObjects[i].element===window){
 					continue;
 				}
-				if (node.isEqualNode(clickObjects[i].element)) {
+				if (node.isEqualNode(ClickObjects[i].element)) {
 					clickobjectexists = true;
-					clickobject = clickObjects[i];
+					clickobject = ClickObjects[i];
 				}
 			}
 
@@ -687,7 +698,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 				}
 
 				if(elementdata["element-labels"].length===0){
-					elementdata["element-labels"] = this.getInputLabels(node,[],1);
+					elementdata["element-labels"] = this.GetInputLabels(node,[],1);
 				}
 
 				if(elementdata["element-labels"].length===0){
@@ -695,8 +706,8 @@ if (typeof Voicepluginsdk === 'undefined') {
 				}
 
 				if((node.hasOwnProperty("displaytype") && node.displaytype==="tab-content") || (node.hasOwnProperty("navtype") && node.navtype==="navtab")){
-					for(var j=0;j<this.menuitems.length;j++){
-						var menuitem=this.menuitems[j];
+					for(var j=0; j<this.MenuItems.length; j++){
+						var menuitem=this.MenuItems[j];
 						if(menuitem.refid === node.tabid) {
 							if(menuitem.menunode.hasOwnProperty("path")){
 								node.path =  menuitem.menunode.path+">"+menuitem.name;
@@ -726,7 +737,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 				elementdata["element-data"] = node;
 				elementdata["clickobject"] = clickobject;
 
-				this.htmlindex.push(elementdata);
+				this.IndexedNodes.push(elementdata);
 
 				// add click to node to send what user has clicked.
 				// this.addClickToNode(node);
@@ -734,10 +745,10 @@ if (typeof Voicepluginsdk === 'undefined') {
 				// remove parent click recording if childnode has click
 				/*if(hasparentnodeclick && parentclicknode!==""){
 					console.log({parentnode:parentclicknode});
-					jQuery(parentclicknode).unbind('click', Voicepluginsdk.recorduserclick(parentclicknode));
+					jQuery(parentclicknode).unbind('click', DigitalAssistantSDK.recorduserclick(parentclicknode));
 					// jQuery(parentclicknode).unbind('click');
 					if(parentclicknode.removeEventListener){
-						// parentclicknode.removeEventListener("click",Voicepluginsdk.recorduserclick);
+						// parentclicknode.removeEventListener("click",DigitalAssistantSDK.recorduserclick);
 					}
 				}*/
 				let dga = {hasparentclick: false, parentnode: {}};
@@ -751,7 +762,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			return node;
 		},
 		// getting the text for the clicknodes.
-		getInputLabels: function(node, inputlabels, iterationno, iterate=true, getchildlabels=true, fromclick=false, iteratelimit=3, ignorenode=[]){
+		GetInputLabels: function(node, inputlabels, iterationno, iterate=true, getchildlabels=true, fromclick=false, iteratelimit=3, ignorenode=[]){
 
 			if(Array.isArray(ignorenode)){
 				ignorenode=node;
@@ -759,7 +770,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 
 			if((node.nodeName.toLowerCase() === "select" || node.nodeName.toLowerCase() === "checkbox") && iterate && inputlabels.length===0){
 				iterationno++;
-				inputlabels = this.getInputLabels(node.parentNode, inputlabels, iterationno, iterate, true, fromclick, iteratelimit, ignorenode);
+				inputlabels = this.GetInputLabels(node.parentNode, inputlabels, iterationno, iterate, true, fromclick, iteratelimit, ignorenode);
 				if(fromclick) {
 					//todo need to rework
 				}
@@ -806,7 +817,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			//todo fix for image tags
 			if(iterate && node.nodeName.toLowerCase() !== "img" && inputlabels.length === 0 && iterationno<=iteratelimit){
 				iterationno++;
-				inputlabels = this.getInputLabels(node.parentNode,[], iterationno, iterate, getchildlabels, fromclick, iteratelimit);
+				inputlabels = this.GetInputLabels(node.parentNode,[], iterationno, iterate, getchildlabels, fromclick, iteratelimit);
 			}
 
 			if(inputlabels.length===0 && node.id!==""){
@@ -820,7 +831,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 
 			return inputlabels;
 		},
-		getsingleinputlabel: function(parentnode, inputlabel){
+		GetSingleInputLabel: function(parentnode, inputlabel){
 			var childnodes = parentnode.childNodes;
 
 			childnodes.forEach(function (childnode, key) {
@@ -835,7 +846,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 
 			return inputlabel;
 		},
-		addClickToNode:function(node, confirmdialog=false){
+		AddClickToNode:function(node, confirmdialog=false){
 			if(node.hasOwnProperty("addedclickrecord") && node.addedclickrecord===true){
 				return;
 			}
@@ -844,7 +855,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			switch (nodename) {
 				case "select":
 					jQuery(node).on({"focus":function(event){
-							Voicepluginsdk.recorduserclick(node, false,false, event, confirmdialog);
+							DigitalAssistantSDK.RecordUserClick(node, false,false, event, confirmdialog);
 						}
 					});
 					break;
@@ -878,24 +889,24 @@ if (typeof Voicepluginsdk === 'undefined') {
 						case "url":
 						case "week":
 							jQuery(node).click(function (event) {
-								Voicepluginsdk.recorduserclick(node, false, false, event, confirmdialog);
+								DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
 							});
 							break;
 						default:
 							jQuery(node).click(function (event) {
-								Voicepluginsdk.recorduserclick(node, false, false, event, confirmdialog);
+								DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
 							});
 							break;
 					}
 					break;
 				case "mat-select":
 					jQuery(node).click(function (event) {
-						Voicepluginsdk.recorduserclick(node, false, false, event, confirmdialog);
+						DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
 					});
 					break;
 				default:
 					jQuery(node).click(function (event) {
-						Voicepluginsdk.recorduserclick(node, false, false, event, confirmdialog);
+						DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
 					});
 					break;
 			}
@@ -903,12 +914,12 @@ if (typeof Voicepluginsdk === 'undefined') {
 			return node;
 		},
 		//searching all the nodes for the given input
-		searchnodes: function(){
+		SearchNodes: function(){
 			var searchtext = jQuery("#voicesearchinput").val();
 			var matchnodes = [];
-			if(searchtext !== "" && this.htmlindex.length>0){
-				for(var i=0;i<this.htmlindex.length;i++){
-					var searchnode = this.htmlindex[i];
+			if(searchtext !== "" && this.IndexedNodes.length>0){
+				for(var i=0; i<this.IndexedNodes.length; i++){
+					var searchnode = this.IndexedNodes[i];
 					var searchlabelexists=false;
 					for(var j=0;j<searchnode['element-labels'].length;j++){
 						var label = searchnode['element-labels'][j].text.toString().toLowerCase();
@@ -924,17 +935,17 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 			if(matchnodes.length>0){
 				if(matchnodes.length===1){
-					this.matchaction(matchnodes[0]);
+					this.MatchAction(matchnodes[0]);
 					return;
 				}
-				this.rendersearchresults();
+				this.RenderSearchResults();
 				for(var k=0;k<matchnodes.length;k++){
-					this.renderresultrow(matchnodes[k],k);
+					this.RenderResultRow(matchnodes[k],k);
 				}
 			}
 		},
 		//render results html
-		rendersearchresults:function(){
+		RenderSearchResults:function(){
 			var html =  '<table class="nist-voice-search-tb" nist-voice="true">' +
 						'  <tbody id="nist-voiceresultrow" nist-voice="true">' +
 						'  </tbody>' +
@@ -942,8 +953,8 @@ if (typeof Voicepluginsdk === 'undefined') {
 			jQuery("#nistvoicesearchresults").html(html);
 		},
 		//render result row html
-		renderresultrow:function(data,index){
-			var matchindex=0;
+		RenderResultRow:function(data, index){
+			let matchindex = 0;
 			for(var i=0;i<data["element-labels"].length;i++){
 				if(data["element-labels"][i].match){
 					matchindex=i;
@@ -958,27 +969,27 @@ if (typeof Voicepluginsdk === 'undefined') {
 						'</tr>';
 			var element=jQuery(html);
 			element.click(function(){
-				Voicepluginsdk.matchaction(data);
+				DigitalAssistantSDK.MatchAction(data);
 			});
 			jQuery("#nist-voiceresultrow").append(element);
 			if(data['element-path']!==""){
 				var paths=data['element-path'].split(">");
 				if(paths.length>0){
 					for (var i=0;i<paths.length;i++){
-						jQuery("#nistbreadcrumb"+index).append(this.renderpathsearch(paths[i]));
+						jQuery("#nistbreadcrumb"+index).append(this.RenderPathSearch(paths[i]));
 					}
 				}
 			}
 		},
 		//render path if available
-		renderpathsearch:function(data){
+		RenderPathSearch:function(data){
 			var template = jQuery("<li nist-voice=\"true\"><a nist-voice=\"true\">"+data+"</a></li>");
 			return template;
 		},
 		//matching the action of the node and invoking whether to click or focus
-		matchaction:function(data,close=true,selectednode){
+		MatchAction:function(data, close=true, selectednode){
 			if(close) {
-				this.closemodal();
+				this.CloseModal();
 			}
 			var node=data["element-data"];
 			var timetoinvoke=1000;
@@ -986,9 +997,9 @@ if (typeof Voicepluginsdk === 'undefined') {
 			// intro js issue fix
 			let addintrostep=true;
 			let introstepindex=0;
-			if(this.introjsaddedstepnodes.length>0){
-				for(var introi=0;introi<this.introjsaddedstepnodes.length;introi++){
-					if(node.isEqualNode(this.introjsaddedstepnodes[introi])){
+			if(this.IntroJsAddedStepNodes.length>0){
+				for(var introi=0; introi<this.IntroJsAddedStepNodes.length; introi++){
+					if(node.isEqualNode(this.IntroJsAddedStepNodes[introi])){
 						addintrostep=false;
 						introstepindex=introi;
 					}
@@ -997,43 +1008,43 @@ if (typeof Voicepluginsdk === 'undefined') {
 			switch (node.nodeName.toLowerCase()) {
 				case "input":
 					if(addintrostep) {
-						this.introjstotalsteps++;
-						this.introjscurrentstepnumber++;
-						this.introjsaddedstepnodes.push(node);
-						this.introjs.addStep({
+						this.IntroJsTotalSteps++;
+						this.IntroJsCurrentStepNumber++;
+						this.IntroJsAddedStepNodes.push(node);
+						this.IntroJS.addStep({
 							element: node,
 							intro: "Please input in the field and then continue."
-						}).goToStepNumber(this.introjscurrentstepnumber).start();
+						}).goToStepNumber(this.IntroJsCurrentStepNumber).start();
 					} else {
-						this.introjs.goToStepNumber(introstepindex).start();
+						this.IntroJS.goToStepNumber(introstepindex).start();
 					}
 					break;
 				case "textarea":
 					if(addintrostep) {
-						this.introjstotalsteps++;
-						this.introjscurrentstepnumber++;
-						this.introjsaddedstepnodes.push(node);
-						this.introjs.addStep({
+						this.IntroJsTotalSteps++;
+						this.IntroJsCurrentStepNumber++;
+						this.IntroJsAddedStepNodes.push(node);
+						this.IntroJS.addStep({
 							element: node,
 							intro: "Please select the value and then continue."
-						}).goToStepNumber(this.introjscurrentstepnumber).start();
+						}).goToStepNumber(this.IntroJsCurrentStepNumber).start();
 					} else {
-						this.introjs.goToStepNumber(introstepindex).start();
+						this.IntroJS.goToStepNumber(introstepindex).start();
 					}
 					break;
 				case "select":
-					var inputlabel=this.getclickedinputlabels(node);
+					var inputlabel=this.GetClickedInputLabels(node);
 					var labelmatch=false;
 					if(addintrostep) {
-						this.introjstotalsteps++;
-						this.introjscurrentstepnumber++;
-						this.introjsaddedstepnodes.push(node);
-						this.introjs.addStep({
+						this.IntroJsTotalSteps++;
+						this.IntroJsCurrentStepNumber++;
+						this.IntroJsAddedStepNodes.push(node);
+						this.IntroJS.addStep({
 							element: node,
 							intro: "Please select the value and then continue."
-						}).goToStepNumber(this.introjscurrentstepnumber).start();
+						}).goToStepNumber(this.IntroJsCurrentStepNumber).start();
 					} else {
-						this.introjs.goToStepNumber(introstepindex).start();
+						this.IntroJS.goToStepNumber(introstepindex).start();
 					}
 					break;
 				case "option":
@@ -1041,26 +1052,26 @@ if (typeof Voicepluginsdk === 'undefined') {
 					break;
 				case "checkbox":
 					node.click();
-					this.invokenextitem(node,timetoinvoke);
+					this.InvokeNextItem(node,timetoinvoke);
 					break;
 				default:
 					node.click();
-					this.invokenextitem(node,timetoinvoke);
+					this.InvokeNextItem(node,timetoinvoke);
 			}
 		},
 		//invoke the click of next item
-		invokenextitem:function(node,timetoinvoke){
+		InvokeNextItem:function(node, timetoinvoke){
 			var link=false;
 			timetoinvoke=timetoinvoke+4000;
 			if(node.hasOwnProperty("href")){
 				link=true;
 			}
 			if(!link) {
-				setTimeout(function(){Voicepluginsdk.showhtml();}, timetoinvoke);
+				setTimeout(function(){DigitalAssistantSDK.ShowHtml();}, timetoinvoke);
 			}
 		},
 		//firing an event if event available for the node. Currently not implemented
-		eventFire:function(el, etype){
+		EventFire:function(el, etype){
 			if (el.fireEvent) {
 				el.fireEvent('on' + etype);
 			} else {
@@ -1070,13 +1081,13 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 		},
 		//reindex all nodes
-		reindexnodes:function(){
-			this.indexdom(document.body);
-			this.sendtoserver();
+		ReIndexNodes:function(){
+			this.IndexDom(document.body);
+			this.SendToServer();
 		},
 		// sending all the indexed nodes to server
-		sendtoserver: function(){
-			var indexednodes = this.htmlindex;
+		SendToServer: function(){
+			var indexednodes = this.IndexedNodes;
 			var items = [];
 			if(indexednodes.length>0){
 				for(var i=0;i<indexednodes.length;i++){
@@ -1094,14 +1105,14 @@ if (typeof Voicepluginsdk === 'undefined') {
 					itemdata.objectdata=JSON.stringify(domJSON.toJSON(indexednode["element-data"]));
 					items.push(itemdata);
 				}
-				var data = {sessionid:this.sessionID,domain:window.location.host,urlpath:window.location.pathname, clickednodename:"", data:JSON.stringify(items)};
-				var clickednodenamedata=this.getstoragedata(this.recordclicknodecookiename);
+				var data = {sessionid:this.SessionID,domain:window.location.host,urlpath:window.location.pathname, clickednodename:"", data:JSON.stringify(items)};
+				var clickednodenamedata=this.GetStorageData(this.RecordClickNodeCookieName);
 				if(clickednodenamedata){
 					data.clickednodename=clickednodenamedata;
 				}
 				var outputdata = JSON.stringify(data);
 				var xhr = new XMLHttpRequest();
-				xhr.open("POST", this.apihost+"/clickevents/", true);
+				xhr.open("POST", this.APIEndPoint+"/clickevents/", true);
 				xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 				xhr.onload = function(event){
 					if(xhr.status === 200){
@@ -1109,13 +1120,13 @@ if (typeof Voicepluginsdk === 'undefined') {
 					} else {
 
 					}
-					Voicepluginsdk.addclickedrecordcookie("");
+					DigitalAssistantSDK.AddClickedRecordCookie("");
 				};
 				xhr.send(outputdata);
 			}
 		},
 		//adding user click to the processing node.
-		recorduserclick:function(node, fromdocument=false, selectchange=false, event, confirmdialog=false, hasparentclick = false){
+		RecordUserClick:function(node, fromdocument=false, selectchange=false, event, confirmdialog=false, hasparentclick = false){
 
 			if(fromdocument){
 				// todo from document click functionality;
@@ -1125,18 +1136,18 @@ if (typeof Voicepluginsdk === 'undefined') {
 				return true;
 			}
 
-			if(this.lastclickednode!=='' && node.isEqualNode(this.lastclickednode)){
+			if(this.LastClickedNode!=='' && node.isEqualNode(this.LastClickedNode)){
 				return ;
 			}
 
-			if(this.lastclickedtime===Date.now()){
+			if(this.LastClickedTime===Date.now()){
 				return ;
 			}
 
 			var processclick=true;
-			if(fromdocument && this.htmlindex.length>0){
-				for(var i=0;i<this.htmlindex.length;i++){
-					var processnode=this.htmlindex[i];
+			if(fromdocument && this.IndexedNodes.length>0){
+				for(var i=0; i<this.IndexedNodes.length; i++){
+					var processnode=this.IndexedNodes[i];
 					if(node.isEqualNode(processnode['element-data'])){
 						processclick=false;
 					}
@@ -1151,7 +1162,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 				var postdata = {
 					domain: window.location.host,
 					urlpath: window.location.pathname,
-					sessionid: this.sessionID,
+					sessionid: this.SessionID,
 					clickednodename: "",
 					html5: 0,
 					clickedpath: "",
@@ -1177,32 +1188,32 @@ if (typeof Voicepluginsdk === 'undefined') {
 				var postdata = {
 					domain: window.location.host,
 					urlpath: window.location.pathname,
-					sessionid: this.sessionID,
+					sessionid: this.SessionID,
 					clickednodename: "",
 					html5: 0,
 					clickedpath: "",
 					objectdata: domJSON.toJSON(node, {stringify: true})
 				};
 			}
-			postdata.clickednodename = this.getclickedinputlabels(node,fromdocument,selectchange);
+			postdata.clickednodename = this.GetClickedInputLabels(node,fromdocument,selectchange);
 
 			// for known scenarios prompt user for input
-			if(confirmdialog && this.recording && !this.confirmednode && !this.autoplay){
-				this.confirmparentclick(node, fromdocument, selectchange, event);
+			if(confirmdialog && this.Recording && !this.ConfirmedNode && !this.AutoPlay){
+				this.ConfirmParentClick(node, fromdocument, selectchange, event);
 				return false;
 			}
 
-			this.rerenderhtml=true;
-			this.addclickedrecordcookie(postdata.clickednodename);
-			this.lastclickednode=node;
-			this.lastclickedtime=Date.now();
+			this.RerenderHtml=true;
+			this.AddClickedRecordCookie(postdata.clickednodename);
+			this.LastClickedNode=node;
+			this.LastClickedTime=Date.now();
 			var outputdata = JSON.stringify(postdata);
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", this.apihost+"/user/clickednode");
+			xhr.open("POST", this.APIEndPoint+"/user/clickednode");
 			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.confirmednode = false;
+					DigitalAssistantSDK.ConfirmedNode = false;
 				} else {
 
 				}
@@ -1210,27 +1221,27 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send(outputdata);
 
 			//processing new clicknodes if available after the click action.
-			setTimeout(function (){Voicepluginsdk.indexnewclicknodes();},POST_INTERVAL);
+			setTimeout(function (){DigitalAssistantSDK.indexnewclicknodes();},PostInterval);
 
 			// rerender html if recording is enabled.
-			if(this.recording) {
+			if(this.Recording) {
 				setTimeout(function () {
-					Voicepluginsdk.showhtml();
-				}, POST_INTERVAL);
+					DigitalAssistantSDK.ShowHtml();
+				}, PostInterval);
 			}
 		},
-		confirmparentclick:function(node, fromdocument, selectchange, event) {
+		ConfirmParentClick:function(node, fromdocument, selectchange, event) {
 			var confirmtext = '';
 			console.log({node: node});
-			var prevclicktext = this.getclickedinputlabels(this.lastclickednode, fromdocument, selectchange);
+			var prevclicktext = this.GetClickedInputLabels(this.LastClickedNode, fromdocument, selectchange);
 			if(node.hasChildNodes()) {
-				var childtextexists = this.processparentchildnodes(node, prevclicktext);
+				var childtextexists = this.ProcessParentChildNodes(node, prevclicktext);
 				// confirmtext = this.getclickedinputlabels(node.dga.parentnode.childNodes[0],fromdocument,selectchange);
 				if(!childtextexists) {
 					var confirmdialog = confirm("Did you clicked: " + postdata.clickednodename);
 					if (confirmdialog === true) {
-						Voicepluginsdk.confirmednode = true;
-						Voicepluginsdk.recorduserclick(node, fromdocument, selectchange, event, false);
+						DigitalAssistantSDK.ConfirmedNode = true;
+						DigitalAssistantSDK.RecordUserClick(node, fromdocument, selectchange, event, false);
 					}
 					/*swal({
                     title: "Did you clicked?",
@@ -1240,7 +1251,7 @@ if (typeof Voicepluginsdk === 'undefined') {
                     dangerMode: true,
                     }).then((willDelete) => {
                         console.log(willDelete);
-                        this.confirmednode = true;
+                        this.ConfirmedNode = true;
                         this.recorduserclick(node, fromdocument, selectchange, event, false);
                     });*/
 					return false;
@@ -1249,17 +1260,16 @@ if (typeof Voicepluginsdk === 'undefined') {
 				}
 			}
 		},
-		processparentchildnodes:function(node, prevtext) {
+		ProcessParentChildNodes:function(node, prevtext) {
 			var childtextexists = false;
 			for(const childnode of node.childNodes) {
 				if (childnode.nodeType === Node.ELEMENT_NODE) {
-					let childtext = this.getclickedinputlabels(childnode);
-					console.log(childtext)
+					let childtext = this.GetClickedInputLabels(childnode);
 					if(prevtext === childtext) {
 						childtextexists = true;
 						break;
 					} else if(childnode.hasChildNodes()){
-						childtextexists = this.processparentchildnodes(childnode, prevtext);
+						childtextexists = this.ProcessParentChildNodes(childnode, prevtext);
 						if(childtextexists) {
 							break;
 						}
@@ -1269,7 +1279,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			return childtextexists
 		},
 		//getting input label for the clicked node
-		getclickedinputlabels:function(node, fromdocument=false, selectchange=false){
+		GetClickedInputLabels:function(node, fromdocument=false, selectchange=false){
 			var inputlabels="";
 			var nodename=node.nodeName.toLowerCase();
 			switch (nodename) {
@@ -1277,7 +1287,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 					if(selectchange) {
 						inputlabels = jQuery(node).find(":selected").text();
 					} else {
-						var textlabels = this.getInputLabels(node, [], 1, true, false, true);
+						var textlabels = this.GetInputLabels(node, [], 1, true, false, true);
 						if (textlabels.length > 0) {
 							var labels = [];
 							for (var j = 0; j < textlabels.length; j++) {
@@ -1289,7 +1299,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 					break;
 				case "input":
 					if(!node.hasAttribute("type")){
-						var textlabels = this.getInputLabels(node, [], 1, true, true, true);
+						var textlabels = this.GetInputLabels(node, [], 1, true, true, true);
 						if (textlabels.length > 0) {
 							var labels = [];
 							for (var j = 0; j < textlabels.length; j++) {
@@ -1300,7 +1310,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 					} else {
 						switch (node.getAttribute("type").toLowerCase()) {
 							default:
-								var textlabels = this.getInputLabels(node, [], 1, true, true, true);
+								var textlabels = this.GetInputLabels(node, [], 1, true, true, true);
 								if (textlabels.length > 0) {
 									var labels = [];
 									for (var j = 0; j < textlabels.length; j++) {
@@ -1312,7 +1322,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 						break;
 					}
 				case "textarea":
-					var textlabels = this.getInputLabels(node, [], 1, true, true, true);
+					var textlabels = this.GetInputLabels(node, [], 1, true, true, true);
 					if (textlabels.length > 0) {
 						var labels = [];
 						for (var j = 0; j < textlabels.length; j++) {
@@ -1322,7 +1332,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 					}
 					break;
 				case "img":
-					var textlabels = this.getInputLabels(node, [], 1, true, false, true);
+					var textlabels = this.GetInputLabels(node, [], 1, true, false, true);
 					if (textlabels.length > 0) {
 						var labels = [];
 						for (var j = 0; j < textlabels.length; j++) {
@@ -1332,7 +1342,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 					}
 					break;
 				default:
-					var textlabels = this.getInputLabels(node, [], 1, false, true, true);
+					var textlabels = this.GetInputLabels(node, [], 1, false, true, true);
 					if (textlabels.length > 0) {
 						var labels = [];
 						for (var j = 0; j < textlabels.length; j++) {
@@ -1344,25 +1354,25 @@ if (typeof Voicepluginsdk === 'undefined') {
 			return inputlabels;
 		},
 		//record page click todo functionality
-		recorddocumentclick:function(){
+		RecordDocumentClick:function(){
 			jQuery(document).ready(function(){
 				document.body.addEventListener('click', function (event) { }, false);
 			});
 		},
 		//adding current timestamp to the required actions under recording functionality
-		gettimestamp:function(buttonclicked){
+		GetTimeStamp:function(buttonclicked){
 			if(buttonclicked !== "") {
 				var result = Date.now();
 				if(buttonclicked==="start"){
-					this.startrecordingsequence(result);
+					this.StartRecordingSequence(result);
 				} else if(buttonclicked==="stop"){
-					this.stoprecordingsequence(result);
+					this.StopRecordingSequence(result);
 				}
 			}
 		},
 		//show recorded results in UDA screen
-		showrecordedresults:function(){
-			var recordingcookie = this.getstoragedata(this.recordingcookiename);
+		ShowRecordedResults:function(){
+			var recordingcookie = this.GetStorageData(this.RecordingCookieName);
 			var starttime=null;
 			var endtime=Date.now();
 			if(recordingcookie){
@@ -1374,10 +1384,10 @@ if (typeof Voicepluginsdk === 'undefined') {
 
 			jQuery("#nistvoicesearchresults").html("");
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", this.apihost+"/clickevents/fetchrecorddata?start="+starttime+"&end="+endtime+"&sessionid="+Voicepluginsdk.sessionID+"&domain="+recordingcookiedata.domain, true);
+			xhr.open("GET", this.APIEndPoint+"/clickevents/fetchrecorddata?start="+starttime+"&end="+endtime+"&sessionid="+DigitalAssistantSDK.SessionID+"&domain="+recordingcookiedata.domain, true);
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.addrecordresultshtml(JSON.parse(xhr.response));
+					DigitalAssistantSDK.AddRecordResultsHtml(JSON.parse(xhr.response));
 				} else {
 
 				}
@@ -1385,8 +1395,8 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send();
 		},
 		//start recording the user click to form a sequence
-		startrecordingsequence:function(currenttimestamp){
-			var recordingcookie = this.getstoragedata(this.recordingcookiename);
+		StartRecordingSequence:function(currenttimestamp){
+			var recordingcookie = this.GetStorageData(this.RecordingCookieName);
 			if (recordingcookie) {
 				var recordingcookiedata = JSON.parse(recordingcookie);
 				recordingcookiedata.starttime = currenttimestamp;
@@ -1396,15 +1406,15 @@ if (typeof Voicepluginsdk === 'undefined') {
 				var recordingcookiedata = {recording: true, starttime: currenttimestamp, endtime: null};
 			}
 			recordingcookiedata.domain = window.location.host;
-			this.createstoragedata(this.recordingcookiename,JSON.stringify(recordingcookiedata));
-			this.showhtml();
+			this.CreateStorageData(this.RecordingCookieName,JSON.stringify(recordingcookiedata));
+			this.ShowHtml();
 
 			//add analtytics
-			this.recordclick('recordingstart',recordingcookiedata.domain);
+			this.RecordClick('recordingstart',recordingcookiedata.domain);
 		},
 		//stop recording sequence that has been started and show recorded results
-		stoprecordingsequence:function(currenttimestamp){
-			var recordingcookie = this.getstoragedata(this.recordingcookiename);
+		StopRecordingSequence:function(currenttimestamp){
+			var recordingcookie = this.GetStorageData(this.RecordingCookieName);
 			if(recordingcookie){
 				var recordingcookiedata=JSON.parse(recordingcookie);
 				recordingcookiedata.endtime=currenttimestamp;
@@ -1412,18 +1422,18 @@ if (typeof Voicepluginsdk === 'undefined') {
 			} else {
 				return false;
 			}
-			this.createstoragedata(this.recordingcookiename,JSON.stringify(recordingcookiedata));
+			this.CreateStorageData(this.RecordingCookieName,JSON.stringify(recordingcookiedata));
 
 			//add analtytics
-			this.recordclick('recordingstop',recordingcookiedata.domain);
+			this.RecordClick('recordingstop',recordingcookiedata.domain);
 
-			this.showhtml();
+			this.ShowHtml();
 			jQuery("#nistvoicesearchresults").html("");
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", this.apihost+"/clickevents/fetchrecorddata?start="+recordingcookiedata.starttime+"&end="+recordingcookiedata.endtime+"&sessionid="+Voicepluginsdk.sessionID+"&domain="+recordingcookiedata.domain, true);
+			xhr.open("GET", this.APIEndPoint+"/clickevents/fetchrecorddata?start="+recordingcookiedata.starttime+"&end="+recordingcookiedata.endtime+"&sessionid="+DigitalAssistantSDK.SessionID+"&domain="+recordingcookiedata.domain, true);
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.addrecordresultshtml(JSON.parse(xhr.response));
+					DigitalAssistantSDK.AddRecordResultsHtml(JSON.parse(xhr.response));
 				} else {
 
 				}
@@ -1431,8 +1441,8 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send();
 		},
 		//cancel the recording sequence
-		cancelrecordingsequence:function(render=true){
-			var recordingcookie = this.getstoragedata(this.recordingcookiename);
+		CancelRecordingSequence:function(render=true){
+			var recordingcookie = this.GetStorageData(this.RecordingCookieName);
 			if(recordingcookie){
 				var recordingcookiedata=JSON.parse(recordingcookie);
 				recordingcookiedata.endtime=Date.now();
@@ -1440,21 +1450,21 @@ if (typeof Voicepluginsdk === 'undefined') {
 			} else {
 				return false;
 			}
-			this.createstoragedata(this.recordingcookiename,JSON.stringify(recordingcookiedata));
+			this.CreateStorageData(this.RecordingCookieName,JSON.stringify(recordingcookiedata));
 			var navcookiedata = {shownav: false, data: {}, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:''};
-			this.createstoragedata(this.navigationcookiename,JSON.stringify(navcookiedata));
+			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata));
 
 			//add analtytics
-			this.recordclick('recordingcancel',recordingcookiedata.domain);
+			this.RecordClick('recordingcancel',recordingcookiedata.domain);
 
 			if(render) {
-				this.showhtml();
+				this.ShowHtml();
 			}
 		},
 		//show sequence list html
-		addrecordresultshtml:function(data){
+		AddRecordResultsHtml:function(data){
 			if(data.length>0) {
-				this.recordedsequenceids=data;
+				this.RecordedSequenceIDs=data;
 				var html =  '   <div class="voice-suggesion-card">'+
 							'		<div class="voice-card-left">'+
 							'			<h4>Recorded Sequence</h4>'+
@@ -1462,21 +1472,21 @@ if (typeof Voicepluginsdk === 'undefined') {
 							'			</ul>'+
 							'			<div>'+
 							'				<input id="nistsequencelabel" type="text" name="save-recrded" class="voice-save-recrded-inpt" placeholder="Enter label" nist-voice="true">'+
-							'				<button class="voice-cancel-btn" onclick="Voicepluginsdk.cancelrecordingsequence();">Cancel and exit</button> <button onclick="Voicepluginsdk.submitrecordedlabel();" class="voice-submit-btn">Submit</button>'+
+							'				<button class="voice-cancel-btn" onclick="DigitalAssistantSDK.CancelRecordingSequence();">Cancel and exit</button> <button onclick="DigitalAssistantSDK.SubmitRecordedLabel();" class="voice-submit-btn">Submit</button>'+
 							'			</div>'+
 							'		</div>'+
 							'	</div>';
 				jQuery("#nistvoicesearchresults").html(html);
 				for(var i=0;i<data.length;i++){
-					this.renderrecordresultrow(data[i],i);
+					this.RenderRecordResultRow(data[i],i);
 				}
-				this.openmodal(false);
+				this.OpenModal(false);
 			}
 		},
 		//render record row html of the sequence
-		renderrecordresultrow:function(data,index){
+		RenderRecordResultRow:function(data, index){
 			index++;
-			let clickedname=((data.clickednodename.length>this.maxstringlength)?data.clickednodename.substr(0,this.maxstringlength)+'...':data.clickednodename);
+			let clickedname=((data.clickednodename.length>this.MaxStringLength)?data.clickednodename.substr(0,this.MaxStringLength)+'...':data.clickednodename);
 			// let clickedname=data.clickednodename;
 			var html =  '<li nist-voice="true" class="active">' +
 							clickedname +
@@ -1485,9 +1495,9 @@ if (typeof Voicepluginsdk === 'undefined') {
 			jQuery("#nist-recordresultrow").append(element);
 		},
 		// submit functionality of the recorded sequence.
-		submitrecordedlabel:function(submittype="recording"){
+		SubmitRecordedLabel:function(submittype="recording"){
 			var sequencename=jQuery("#nistsequencelabel").val();
-			var sequencelistdata={name:"",domain:window.location.host,usersessionid:this.sessiondata.authdata.id.toString(),userclicknodelist:[].toString(),userclicknodesSet:this.recordedsequenceids,isValid:1,isIgnored:0};
+			var sequencelistdata={name:"",domain:window.location.host,usersessionid:this.SessionData.authdata.id.toString(),userclicknodelist:[].toString(),userclicknodesSet:this.RecordedSequenceIDs,isValid:1,isIgnored:0};
 			if(submittype==='recording') {
 				if (sequencename === '') {
 					alert('Please enter proper label');
@@ -1507,19 +1517,19 @@ if (typeof Voicepluginsdk === 'undefined') {
 				sequencelistdata.isIgnored=1;
 			}
 			var sequenceids = [];
-			for(var i=0;i<this.recordedsequenceids.length;i++){
-				sequenceids.push(this.recordedsequenceids[i].id);
+			for(var i=0; i<this.RecordedSequenceIDs.length; i++){
+				sequenceids.push(this.RecordedSequenceIDs[i].id);
 			}
 			sequencelistdata.name=sequencename;
 			sequencelistdata.userclicknodelist=sequenceids.toString();
-			// var sequencelistdata={name:sequencename,domain:window.location.host,usersessionid:this.sessionID,userclicknodelist:sequenceids.toString(),userclicknodesSet:this.recordedsequenceids};
-			this.cancelrecordingsequence(true);
+			// var sequencelistdata={name:sequencename,domain:window.location.host,usersessionid:this.SessionID,userclicknodelist:sequenceids.toString(),userclicknodesSet:this.RecordedSequenceIDs};
+			this.CancelRecordingSequence(true);
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", this.apihost + "/clickevents/recordsequencedata", true);
+			xhr.open("POST", this.APIEndPoint + "/clickevents/recordsequencedata", true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.backtomodal();
+					DigitalAssistantSDK.BackToModal();
 				} else {
 
 				}
@@ -1527,26 +1537,26 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send(JSON.stringify(sequencelistdata));
 		},
 		// adding the last clicked record to the storage
-		addclickedrecordcookie:function(clickednodename){
-			this.createstoragedata(this.recordclicknodecookiename,clickednodename);
+		AddClickedRecordCookie:function(clickednodename){
+			this.CreateStorageData(this.RecordClickNodeCookieName,clickednodename);
 		},
-		// search from elastic functionality
-		searchinelastic:function(searchterm=''){
+		// search from Elastic functionality
+		SearchInElastic:function(searchterm=''){
 			if(searchterm) {
 				var searchtext = searchterm;
 			} else {
 				var searchtext = jQuery("#voicesearchinput").val();
 			}
-			this.cancelrecordingsequence(false);
+			this.CancelRecordingSequence(false);
 
 			//add analtytics
-			this.recordclick('search',searchtext);
+			this.RecordClick('search',searchtext);
 
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", this.apihost + "/clickevents/sequence/search?query="+searchtext+"&domain="+encodeURI(window.location.host), true);
+			xhr.open("GET", this.APIEndPoint + "/clickevents/sequence/search?query="+searchtext+"&domain="+encodeURI(window.location.host), true);
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.renderelasticresults(JSON.parse(xhr.response));
+					DigitalAssistantSDK.RenderElasticResults(JSON.parse(xhr.response));
 				} else {
 
 				}
@@ -1554,21 +1564,21 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send();
 		},
 		//rendering search results screen
-		renderelasticresults:function(data){
+		RenderElasticResults:function(data){
 			var matchnodes = data;
 			if(matchnodes.length>0){
 				jQuery("#nistvoicesearchresults").html('');
 				for(var k=0;k<matchnodes.length;k++){
 					if(matchnodes[k].hasOwnProperty("deleted") && matchnodes[k].deleted===0) {
-						this.renderelasticresultrow(matchnodes[k], k);
+						this.RenderElasticResultRow(matchnodes[k], k);
 					} else if(!matchnodes[k].hasOwnProperty("deleted")) {
-						this.renderelasticresultrow(matchnodes[k], k);
+						this.RenderElasticResultRow(matchnodes[k], k);
 					}
 				}
 			}
 		},
 		//rendering each row html of the search result
-		renderelasticresultrow:function(data){
+		RenderElasticResultRow:function(data){
 			var path='';
 			for(var i=0;i<data.userclicknodesSet.length;i++){
 				if(path!==''){
@@ -1581,38 +1591,38 @@ if (typeof Voicepluginsdk === 'undefined') {
 						'	</div>';
 			var element=jQuery(html);
 			element.click(function () {
-				Voicepluginsdk.elasticresultaction(data);
+				DigitalAssistantSDK.ElasticResultAction(data);
 			});
 			jQuery("#nistvoicesearchresults").append(element);
 		},
 		//selected search result functionality
-		elasticresultaction:function(data){
+		ElasticResultAction:function(data){
 			var navcookiedata = {shownav: true, data: data, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:''};
 			navcookiedata.searchterm=jQuery("#voicesearchinput").val();
-			this.createstoragedata(this.navigationcookiename,JSON.stringify(navcookiedata));
-			this.showselectedrow(data,data.id,true, navcookiedata);
+			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata));
+			this.ShowSelectedRow(data,data.id,true, navcookiedata);
 			//add analtytics
-			this.recordclick('sequencerecord',data.name.toString(),data.id);
+			this.RecordClick('sequencerecord',data.name.toString(),data.id);
 		},
 		//showing the selected search result screen functionality
-		showselectedrow:function(data,index,shownodelist=false, navcookiedata={}){
+		ShowSelectedRow:function(data, index, shownodelist=false, navcookiedata={}){
 			if(shownodelist && navcookiedata.data.userclicknodesSet.length===navcookiedata.navigateddata.length){
 				navcookiedata.navcompleted=true;
 			}
 			var playiconhtml =  '<div class="voice-autoplay-stop">';
-								// '	<span><img nist-voice="true" id="nist-autoplay" src="' + this.extensionpath + 'assets/voice-pause.png"></span>'+
+								// '	<span><img nist-voice="true" id="nist-autoplay" src="' + this.ExtensionPath + 'assets/voice-pause.png"></span>'+
 
 			if(shownodelist) {
 				if (navcookiedata.navcompleted) {
-					playiconhtml += '	<span><img nist-voice="true" id="nist-autoplay" src="' + this.extensionpath + 'assets/voice-play.png"></span>'+
-									'   <span><img nist-voice="true" src="' + this.extensionpath + 'assets/voice-stop-disable.png"></span>';
+					playiconhtml += '	<span><img nist-voice="true" id="nist-autoplay" src="' + this.ExtensionPath + 'assets/voice-play.png"></span>'+
+									'   <span><img nist-voice="true" src="' + this.ExtensionPath + 'assets/voice-stop-disable.png"></span>';
 				} else {
 					if(navcookiedata.autoplay) {
-						playiconhtml += '	<span><img nist-voice="true" src="' + this.extensionpath + 'assets/voice-play-disable.png"></span>'+
-										'	<span><img nist-voice="true" id="nist-autoplay" src="' + this.extensionpath + 'assets/voice-stop.png"></span>';
+						playiconhtml += '	<span><img nist-voice="true" src="' + this.ExtensionPath + 'assets/voice-play-disable.png"></span>'+
+										'	<span><img nist-voice="true" id="nist-autoplay" src="' + this.ExtensionPath + 'assets/voice-stop.png"></span>';
 					} else {
-						playiconhtml += '	<span><img nist-voice="true" id="nist-autoplay" src="' + this.extensionpath + 'assets/voice-play.png"></span>'+
-										'   <span><img nist-voice="true" src="' + this.extensionpath + 'assets/voice-stop-disable.png"></span>';
+						playiconhtml += '	<span><img nist-voice="true" id="nist-autoplay" src="' + this.ExtensionPath + 'assets/voice-play.png"></span>'+
+										'   <span><img nist-voice="true" src="' + this.ExtensionPath + 'assets/voice-stop-disable.png"></span>';
 					}
 
 				}
@@ -1620,11 +1630,11 @@ if (typeof Voicepluginsdk === 'undefined') {
 			playiconhtml   +=   '</div>';
 			var html =  '<div class="voice-suggesion-card">'+
 						'	<div class="voice-card-left">'+
-						'		<div class="voice-back-btn"><img nist-voice="true" id="backtosearch" src="'+this.extensionpath+'assets/voice-back.png"></div>'+
+						'		<div class="voice-back-btn"><img nist-voice="true" id="backtosearch" src="'+this.ExtensionPath+'assets/voice-back.png"></div>'+
 						'       <div class="voice-feedback-btns">' +
-						'		    <img nist-voice="true" id="nist-upvote" class="voice-like-violet" src="'+this.extensionpath+'assets/voice-like.png">'+
-						'		    <img nist-voice="true" id="nist-downvote" class="voice-dislike-violet" src="'+this.extensionpath+'assets/voice-dislike.png">'+
-						'		    <img nist-voice="true" id="deletesequence" class="voice-delete-violet" src="'+this.extensionpath+'assets/voice-delete.png">'+
+						'		    <img nist-voice="true" id="nist-upvote" class="voice-like-violet" src="'+this.ExtensionPath+'assets/voice-like.png">'+
+						'		    <img nist-voice="true" id="nist-downvote" class="voice-dislike-violet" src="'+this.ExtensionPath+'assets/voice-dislike.png">'+
+						'		    <img nist-voice="true" id="deletesequence" class="voice-delete-violet" src="'+this.ExtensionPath+'assets/voice-delete.png">'+
 						'       </div>'+
 						'		<h4>'+data.name.toString()+'</h4>'+
 						'		<ul class="voice-sugggesion-bullet" id="nistvoicesteps">'+
@@ -1639,48 +1649,48 @@ if (typeof Voicepluginsdk === 'undefined') {
 			for(var i=0;i<data.userclicknodesSet.length;i++){
 				var visited = -1;
 				if(navcookiedata.navigateddata.length>0) {
-					visited = this.inarray(data.userclicknodesSet[i].id, navcookiedata.navigateddata);
+					visited = this.InArray(data.userclicknodesSet[i].id, navcookiedata.navigateddata);
 				}
 				if(navcookiedata.autoplay && (!navcookiedata.pause || !navcookiedata.stop)){
 					if(visited===-1 && !performactionnode){
 						performactionnode=data.userclicknodesSet[i];
 					}
 				}
-				jQuery("#nistvoicesteps").append(this.rendersteps(data.userclicknodesSet[i],visited,navcookiedata));
+				jQuery("#nistvoicesteps").append(this.RenderSteps(data.userclicknodesSet[i],visited,navcookiedata));
 			}
 
-			if(this.sessionID===data.usersessionid || this.sessiondata.authdata.id===data.usersessionid){
+			if(this.SessionID===data.usersessionid || this.SessionData.authdata.id===data.usersessionid){
 				jQuery("#deletesequence").click(function () {
-					Voicepluginsdk.deletesequencelist(data);
+					DigitalAssistantSDK.DeleteSequenceList(data);
 				});
 			} else {
 				jQuery("#deletesequence").hide();
 			}
 
 			jQuery('#nist-upvote').click(function () {
-				Voicepluginsdk.addvote("up",data);
+				DigitalAssistantSDK.Addvote("up",data);
 			});
 			jQuery('#nist-downvote').click(function () {
-				Voicepluginsdk.addvote("down",data);
+				DigitalAssistantSDK.Addvote("down",data);
 			});
 
 			jQuery("#nist-autoplay").click(function () {
-				Voicepluginsdk.toggleautoplay(navcookiedata);
+				DigitalAssistantSDK.ToggleAutoPlay(navcookiedata);
 			});
 
 			// need to improve the autoplay functionality.
-			if(typeof performactionnode=="object" && this.autoplay) {
-				this.performclickaction(performactionnode,navcookiedata);
-			} else if(this.autoplay){
-				this.toggleautoplay(navcookiedata);
+			if(typeof performactionnode=="object" && this.AutoPlay) {
+				this.PerformClickAction(performactionnode,navcookiedata);
+			} else if(this.AutoPlay){
+				this.ToggleAutoPlay(navcookiedata);
 			}
 			jQuery("#backtosearch").click(function () {
-				Voicepluginsdk.backtosearchresults(navcookiedata);
+				DigitalAssistantSDK.BackToSearchResults(navcookiedata);
 			});
 		},
 		//showing the sequence steps html
-		rendersteps:function(data,visited=false, navcookiedata={}){
-			let clickedname=((data.clickednodename.length>this.maxstringlength)?data.clickednodename.substr(0,this.maxstringlength)+'...':data.clickednodename);
+		RenderSteps:function(data, visited=false, navcookiedata={}){
+			let clickedname=((data.clickednodename.length>this.MaxStringLength)?data.clickednodename.substr(0,this.MaxStringLength)+'...':data.clickednodename);
 			// let clickedname=data.clickednodename;
 			if(visited>-1) {
 				var template = jQuery("<li nist-voice=\"true\" class='active'>" + clickedname + "</li>");
@@ -1689,22 +1699,22 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 			if(visited===-1) {
 				template.click(function () {
-					Voicepluginsdk.performclickaction(data,navcookiedata);
+					DigitalAssistantSDK.PerformClickAction(data,navcookiedata);
 				});
 			}
 			return template;
 		},
 		//perform click action of the sequence steps
-		performclickaction:function(selectednode,navcookiedata){
+		PerformClickAction:function(selectednode, navcookiedata){
 			var matchnodes = [];
 			if(selectednode.objectdata) {
 				var originalnode=JSON.parse(selectednode.objectdata);
-				if(selectednode && this.htmlindex.length>0){
-					for(var i=0;i<this.htmlindex.length;i++){
-						var searchnode = this.htmlindex[i];
+				if(selectednode && this.IndexedNodes.length>0){
+					for(var i=0; i<this.IndexedNodes.length; i++){
+						var searchnode = this.IndexedNodes[i];
 						var searchlabelexists=false;
 						var comparenode=domJSON.toJSON(searchnode["element-data"]);
-						var match=this.comparenodes(comparenode.node,originalnode.node);
+						var match=this.CompareNodes(comparenode.node,originalnode.node);
 
 						if((match.matched+26)>=match.count){
 							searchlabelexists=true;
@@ -1730,8 +1740,8 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 
 			if(matchnodes.length === 1){
-				if(this.updatenavcookiedata(navcookiedata,selectednode.id)){
-					this.matchaction(matchnodes[0],false,selectednode);
+				if(this.UpdateNavCookieData(navcookiedata,selectednode.id)){
+					this.MatchAction(matchnodes[0],false,selectednode);
 				}
 				return;
 			} else if(matchnodes.length>1) {
@@ -1739,7 +1749,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 				var finalmatchnode={};
 				matchnodes.forEach(function (matchnode, matchnodeindex) {
 					if(matchnode.hasOwnProperty("element-data")) {
-						var inputlabels = Voicepluginsdk.getclickedinputlabels(matchnode["element-data"]);
+						var inputlabels = DigitalAssistantSDK.GetClickedInputLabels(matchnode["element-data"]);
 						if (inputlabels === selectednode.clickednodename) {
 							finalmatchnode = matchnode;
 						}
@@ -1747,8 +1757,8 @@ if (typeof Voicepluginsdk === 'undefined') {
 				});
 
 				if(finalmatchnode.hasOwnProperty("element-data")) {
-					if(this.updatenavcookiedata(navcookiedata,selectednode.id)) {
-						this.matchaction(finalmatchnode, false, selectednode);
+					if(this.UpdateNavCookieData(navcookiedata,selectednode.id)) {
+						this.MatchAction(finalmatchnode, false, selectednode);
 					}
 				}
 				return;
@@ -1757,7 +1767,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 		},
 		//comparing nodes of indexed and the sequence step selected
-		comparenodes:function(comparenode,originalnode,match={count:0,matched:0}){
+		CompareNodes:function(comparenode, originalnode, match={count:0,matched:0}){
 			for(var key in originalnode){
 				if(key==="className" || key==='class'){
 					continue;
@@ -1765,12 +1775,12 @@ if (typeof Voicepluginsdk === 'undefined') {
 				match.count++;
 				if(comparenode.hasOwnProperty(key) && (typeof originalnode[key] === 'object') && (typeof comparenode[key] === 'object')){
 					match.matched++
-					match=this.comparenodes(comparenode[key], originalnode[key],match);
+					match=this.CompareNodes(comparenode[key], originalnode[key],match);
 				} else if(comparenode.hasOwnProperty(key) && Array.isArray(originalnode[key]) && originalnode[key].length>0 && Array.isArray(comparenode[key]) && comparenode[key].length>0){
 					match.matched++;
 					if(comparenode[key].length===originalnode[key].length) {
 						for (var i = 0; i < originalnode[key].length; i++) {
-							match=this.comparenodes(comparenode[key][i], originalnode[key][i],match);
+							match=this.CompareNodes(comparenode[key][i], originalnode[key][i],match);
 						}
 					}
 				} else if(comparenode.hasOwnProperty(key) && comparenode[key]===originalnode[key]){
@@ -1780,7 +1790,7 @@ if (typeof Voicepluginsdk === 'undefined') {
 			return match;
 		},
 		//adding data to the storage
-		createstoragedata:function(key,value){
+		CreateStorageData:function(key, value){
 			try {
 				window.localStorage.setItem(key, value);
 				return true;
@@ -1789,31 +1799,31 @@ if (typeof Voicepluginsdk === 'undefined') {
 			}
 		},
 		//getting the data from the storage
-		getstoragedata:function(key){
+		GetStorageData:function(key){
 			try {
-				var result=window.localStorage.getItem(key);
+				let result=window.localStorage.getItem(key);
 				return result;
 			} catch (e) {
 				return false;
 			}
 		},
 		//delete sequence list functionality for the owner
-		deletesequencelist:function(data){
+		DeleteSequenceList:function(data){
 			var confirmdialog=confirm("Are you sure want to delete "+data.name);
 			if(confirmdialog === true){
-				Voicepluginsdk.confirmdelete(data);
+				DigitalAssistantSDK.ConfirmDelete(data);
 			}
 		},
 		//confirmation for the deletion of the sequence list
-		confirmdelete:function (data) {
-			// var senddata=JSON.stringify({usersessionid:this.sessionID,id:data.id});
-			var senddata=JSON.stringify({usersessionid:this.sessiondata.authdata.id,id:data.id});
+		ConfirmDelete:function (data) {
+			// var senddata=JSON.stringify({usersessionid:this.SessionID,id:data.id});
+			var senddata=JSON.stringify({usersessionid:this.SessionData.authdata.id,id:data.id});
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", this.apihost + "/clickevents/sequence/delete", true);
+			xhr.open("POST", this.APIEndPoint + "/clickevents/sequence/delete", true);
 			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.closemodal();
+					DigitalAssistantSDK.CloseModal();
 				} else {
 
 				}
@@ -1821,15 +1831,15 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send(senddata);
 		},
 		//adding vote functionality
-		addvote:function(votetype,data){
-			var senddata={"usersessionid": this.sessionID, "sequenceid" : data.id, "upvote":0, "downvote":0};
+		Addvote:function(votetype, data){
+			var senddata={"usersessionid": this.SessionID, "sequenceid" : data.id, "upvote":0, "downvote":0};
 			if(votetype==="up"){
 				senddata.upvote=1;
 			} else if(votetype==="down"){
 				senddata.downvote=1;
 			}
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", this.apihost + "/clickevents/sequence/addvote", true);
+			xhr.open("POST", this.APIEndPoint + "/clickevents/sequence/addvote", true);
 			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 			xhr.onload = function(event){
 				if(xhr.status === 200){
@@ -1841,47 +1851,47 @@ if (typeof Voicepluginsdk === 'undefined') {
 			xhr.send(JSON.stringify(senddata));
 		},
 		//autoplay functionality to stop and play
-		toggleautoplay:function(navcookiedata){
+		ToggleAutoPlay:function(navcookiedata){
 			if(navcookiedata.autoplay){
 				navcookiedata.autoplay=false;
-				this.autoplay=false;
+				this.AutoPlay=false;
 				//add analtytics
-				this.recordclick('stop',navcookiedata.data.name.toString(),navcookiedata.data.id);
+				this.RecordClick('stop',navcookiedata.data.name.toString(),navcookiedata.data.id);
 			} else {
 				navcookiedata.autoplay=true;
-				this.autoplay=true;
+				this.AutoPlay=true;
 				//add analtytics
-				this.recordclick('play',navcookiedata.data.name.toString(),navcookiedata.data.id);
+				this.RecordClick('play',navcookiedata.data.name.toString(),navcookiedata.data.id);
 			}
 
-			this.createstoragedata(this.navigationcookiename,JSON.stringify(navcookiedata));
-			this.showselectedrow(navcookiedata.data,navcookiedata.data.id,true, navcookiedata);
+			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata));
+			this.ShowSelectedRow(navcookiedata.data,navcookiedata.data.id,true, navcookiedata);
 		},
 		//updating the navigated data
-		updatenavcookiedata:function(navcookiedata,selectednodeid){
+		UpdateNavCookieData:function(navcookiedata, selectednodeid){
 			navcookiedata.navigateddata.push(selectednodeid);
-			return this.createstoragedata(this.navigationcookiename,JSON.stringify(navcookiedata));
+			return this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata));
 		},
 		//back to search results functionality
-		backtosearchresults:function (navcookiedata) {
+		BackToSearchResults:function (navcookiedata) {
 			if(navcookiedata.searchterm!==''){
 				var navcookiedata1 = {shownav: false, data: {}, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:navcookiedata.searchterm};
 			} else {
 				var navcookiedata1 = {shownav: false, data: {}, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:""};
 			}
-			this.createstoragedata(this.navigationcookiename,JSON.stringify(navcookiedata1));
-			this.autoplay=false;
+			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata1));
+			this.AutoPlay=false;
 			jQuery("#voicesearchinput").val(navcookiedata.searchterm);
 
 			//add analtytics
-			this.recordclick('back',navcookiedata.data.name.toString(),navcookiedata.data.id);
+			this.RecordClick('back',navcookiedata.data.name.toString(),navcookiedata.data.id);
 
-			this.searchinelastic(navcookiedata.searchterm);
+			this.SearchInElastic(navcookiedata.searchterm);
 		},
-		recordclick:function (clicktype='sequencerecord',clickedname='',recordid=0) {
-			var senddata={usersessionid:this.sessionID,clicktype:clicktype,clickedname:clickedname,recordid:recordid};
+		RecordClick:function (clicktype='sequencerecord', clickedname='', recordid=0) {
+			var senddata={usersessionid:this.SessionID,clicktype:clicktype,clickedname:clickedname,recordid:recordid};
 			var xhr = new XMLHttpRequest();
-			xhr.open("PUT", this.apihost + "/clickevents/userclick", true);
+			xhr.open("PUT", this.APIEndPoint + "/clickevents/userclick", true);
 			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 			xhr.onload = function(event){
 				if(xhr.status === 200){
@@ -1892,38 +1902,38 @@ if (typeof Voicepluginsdk === 'undefined') {
 			};
 			xhr.send(JSON.stringify(senddata));
 		},
-		showadvancedhtml:function(){
+		ShowAdvancedHtml:function(){
 			jQuery("#nistvoiceadvbtn").hide();
 			jQuery("#nistvoicesearchresults").html('');
-			var html=   '<div class="voice-modalback-btn"><img nist-voice="true" id="nistvoiceback" src="'+this.extensionpath+'assets/voice-back.png"></div><br />'+
+			var html=   '<div class="voice-modalback-btn"><img nist-voice="true" id="nistvoiceback" src="'+this.ExtensionPath+'assets/voice-back.png"></div><br />'+
 						'<div class="nist-clear"></div>'+
 						'   <div class="voice-suggesion-card">' +
 						'		<div class="voice-card-left">' +
-						'			<h4 class="voice-card-noborder">Create your own action <button nist-voice="true" id="nistvoicerecbtn" class="voice-modal-btn"><img nist-voice="true" style="vertical-align:middle" src="'+this.extensionpath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button></h4>' +
+						'			<h4 class="voice-card-noborder">Create your own action <button nist-voice="true" id="nistvoicerecbtn" class="voice-modal-btn"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button></h4>' +
 						'       </div>'+
 						'   </div>';
-						// '<div class="name-heading"><h2 nist-voice="true">Create your own action <button nist-voice="true" id="nistvoicerecbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.extensionpath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button></h2><br /></div>';
+						// '<div class="name-heading"><h2 nist-voice="true">Create your own action <button nist-voice="true" id="nistvoicerecbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button></h2><br /></div>';
 			jQuery("#nistvoicesearchresults").append(html);
 			jQuery("#nistvoicerecbtn").click(function () {
-				Voicepluginsdk.gettimestamp("start");
+				DigitalAssistantSDK.GetTimeStamp("start");
 			});
 			jQuery("#nistvoiceback").click(function () {
-				Voicepluginsdk.backtomodal();
+				DigitalAssistantSDK.BackToModal();
 			});
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", this.apihost + "/clickevents/suggested?domain="+encodeURI(window.location.host), true);
+			xhr.open("GET", this.APIEndPoint + "/clickevents/suggested?domain="+encodeURI(window.location.host), true);
 			xhr.onload = function(event){
 				if(xhr.status === 200){
-					Voicepluginsdk.showsuggestedhtml(JSON.parse(xhr.response));
+					DigitalAssistantSDK.ShowSuggestedHtml(JSON.parse(xhr.response));
 				} else {
 
 				}
 			};
 			xhr.send();
 		},
-		showsuggestedhtml:function(data){
+		ShowSuggestedHtml:function(data){
 			if(data.length>0) {
-				this.recordedsequenceids = data;
+				this.RecordedSequenceIDs = data;
 				var html = '   <div class="voice-suggesion-card">' +
 					'		<div class="voice-card-left">' +
 					'			<h4>Our AI detected this sequence. <br /> Do you want to name it? <br /><span style="color:#ff4800;font-weight:bold;">(Alpha version: Not reliable)</span></h4>' +
@@ -1931,23 +1941,23 @@ if (typeof Voicepluginsdk === 'undefined') {
 					'			</ul>' +
 					'			<div>' +
 					'				<input id="nistsequencelabel" type="text" name="save-recrded" class="voice-save-recrded-inpt" placeholder="Enter label" nist-voice="true">' +
-					'				<button onclick="Voicepluginsdk.submitrecordedlabel(\'recording\');" class="voice-submit-btn">Submit</button><button class="voice-cancel-btn" onclick="Voicepluginsdk.submitrecordedlabel(\'invalid\');">Invalid Sequence</button><button class="voice-cancel-btn" onclick="Voicepluginsdk.submitrecordedlabel(\'ignore\');">Ignore</button>' +
+					'				<button onclick="DigitalAssistantSDK.SubmitRecordedLabel(\'recording\');" class="voice-submit-btn">Submit</button><button class="voice-cancel-btn" onclick="DigitalAssistantSDK.SubmitRecordedLabel(\'invalid\');">Invalid Sequence</button><button class="voice-cancel-btn" onclick="DigitalAssistantSDK.SubmitRecordedLabel(\'ignore\');">Ignore</button>' +
 					'			</div>' +
 					'		</div>' +
 					'	</div>';
 
 				jQuery("#nistvoicesearchresults").append(html);
 				for (var i = 0; i < data.length; i++) {
-					this.renderrecordresultrow(data[i], i);
+					this.RenderRecordResultRow(data[i], i);
 				}
 			}
 		},
-		backtomodal:function(){
+		BackToModal:function(){
 			jQuery("#nistvoiceadvbtn").show();
 			jQuery("#nistvoicesearchresults").html('');
 		}
 	};
-	Voicepluginsdk.init();
+	DigitalAssistantSDK.init();
 } else {
 	// this script has already been loaded
 }

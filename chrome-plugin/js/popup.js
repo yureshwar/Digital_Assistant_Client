@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	/*
 	var micbtn = document.getElementById('submitaction');
 	micbtn.addEventListener('click',function(){
-		recognition.start();
+		Recognition.start();
 	});
 	*/
 });
@@ -27,7 +27,7 @@ $(document).ready(function(){
 	navigator.mediaDevices.getUserMedia({audio: true});
 	$('#micstopbutton').hide();
 	$('#micbutton').on('click', function(e) {
-	  // recognition.start();
+	  // Recognition.start();
 		chrome.tabs.sendMessage(currenttab.id, {action: "startrecording"}, function (response) {
 			//console.log(response);
 		});
@@ -35,7 +35,7 @@ $(document).ready(function(){
 	  	$('#micbutton').hide();
 	});
 	$('#micstopbutton').on('click', function(e) {
-	  // recognition.stop();
+	  // Recognition.stop();
 	  	chrome.tabs.sendMessage(currenttab.id, {action: "stoprecording"}, function (response) {
 			//console.log(response);
 			/*
