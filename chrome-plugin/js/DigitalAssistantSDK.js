@@ -58,7 +58,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 		TotalOtherScriptsCompleted:0,
 		FunctionsToRunWhenReady: [],
 		JqueryReady: false,
-		request:{},
+		Request:{},
 		UserData:{},
 		IgnoreElements : ["script","h1","h2","h3","link","noscript","style"],
 		AvailableNavTabs : [],
@@ -104,11 +104,12 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 		LastClickedTime:'',
 		MaxStringLength:40,
 		ConfirmedNode:false,
+		Ready: false,
 		InArray:function(value, object){
 			return jQuery.inArray(value, object);
 		},
 		// constructor for the sdk class which will be initialized on loading of the variable.
-		init: function() {
+		Init: function() {
 			// loading jquery if not available
 			if(typeof jQuery === "undefined") {
 				// loading jquery from installed extension path
@@ -142,7 +143,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 					DigitalAssistantSDK.ScriptsCompleted++;
 					if (typeof jQuery !== 'undefined') {
 						this.JqueryReady=true;
-						if(this.ready !== true){
+						if(this.Ready !== true){
 							DigitalAssistantSDK.OtherScripts();
 						}
 					}
@@ -204,7 +205,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			this.OnReady();
 		},
 		QueueOrRun: function(fname, param1, param2) {
-			if (!this.ready) {
+			if (!this.Ready) {
 				this.FunctionsToRunWhenReady.push({
 					functionSelf: this[fname],
 					param1: param1,
@@ -254,14 +255,14 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				};
 			}
 
-			this.ready = true;
+			this.Ready = true;
 
 			// listen for when to start the indexing of the dom based on the clicknodes availability
 			document.addEventListener("Indexnodes", function(data) {
 				if(data.detail.data==="indexclicknodes") {
 					DigitalAssistantSDK.IndexClickNodes();
 				} else if(data.detail.data==="indexnewclicknodes") {
-					DigitalAssistantSDK.indexnewclicknodes();
+					DigitalAssistantSDK.IndexNewClickNodes();
 				}
 			});
 
@@ -274,24 +275,24 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			});
 		},
 		CheckUserKeyExists:function(){
-			let SessionData=this.GetStorageData(this.CookieName);
-			if(SessionData){
-				const ParsedSessionData = JSON.parse(SessionData);
-				this.SessionData=ParsedSessionData;
-				this.SessionID=ParsedSessionData.sessionkey;
+			let sessionData=this.GetStorageData(this.CookieName);
+			if(sessionData){
+				const parsedSessionData = JSON.parse(sessionData);
+				this.SessionData=parsedSessionData;
+				this.SessionID=parsedSessionData.sessionkey;
 				this.RecordDocumentClick();
 			}else{
-				const SessionEvent = new CustomEvent("RequestSessiondata", {
+				const sessionEvent = new CustomEvent("RequestSessiondata", {
 					detail: {data: "getusersessiondata"},
 					bubbles: false,
 					cancelable: false
 				});
-				document.dispatchEvent(SessionEvent);
+				document.dispatchEvent(sessionEvent);
 			}
 		},
 		CreateSession:function(data){
-			const SessionData = this.GetStorageData(this.CookieName);
-			if(SessionData){
+			const sessionData = this.GetStorageData(this.CookieName);
+			if(sessionData){
 				this.SessionData=data;
 				this.SessionID=data.sessionkey;
 				this.CreateStorageData(this.CookieName,JSON.stringify(data));
@@ -304,7 +305,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			this.RecordDocumentClick();
 		},
 		ModifyBodyHtml:function(){
-			var html='<div id="nistBtn" nist-voice="true"></div><div id="nist-steps-content" style="display: none;"><div id="voicemodalhtml" nist-voice="true"></div></div>';
+			const html = '<div id="nistBtn" nist-voice="true"></div><div id="nist-steps-content" style="display: none;"><div id="voicemodalhtml" nist-voice="true"></div></div>';
 
 			jQuery(document.body).prepend(html);
 
@@ -319,7 +320,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			}
 			setInterval(function () {
 				if(LastIndexTime!==0 && LastIndexTime<LastMutationTime) {
-					DigitalAssistantSDK.indexnewclicknodes();
+					DigitalAssistantSDK.IndexNewClickNodes();
 				}
 			},PostInterval);
 		},
@@ -335,12 +336,12 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				this.ShowHtml();
 			}
 		},
-		AddVoiceSearchModal:function(addnisticon=true){
-			// var recbtn ='	   <button nist-voice="true" id="nistvoicerecbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button>';
-			var recbtn ='	   <button nist-voice="true" id="nistvoiceadvbtn" class="voice-record-img"><span nist-voice="true">Advanced</span></button>';
+		AddVoiceSearchModal:function(addIcon=true){
+			// var recBtn ='	   <button nist-voice="true" id="nistvoicerecbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-record.png"> <span nist-voice="true">Rec</span></button>';
+			var recBtn ='	   <button nist-voice="true" id="nistvoiceadvbtn" class="voice-record-img"><span nist-voice="true">Advanced</span></button>';
 
-			if(!addnisticon){
-				recbtn ='	   <button nist-voice="true" id="nistvoicerecstpbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-stop.png"> <span nist-voice="true">Stop</span></button>';
+			if(!addIcon){
+				recBtn ='	   <button nist-voice="true" id="nistvoicerecstpbtn" class="voice-record-img"><img nist-voice="true" style="vertical-align:middle" src="'+this.ExtensionPath+'assets/voice-stop.png"> <span nist-voice="true">Stop</span></button>';
 			}
 			var html =  '<div class="voice-redmine-rght">'+
 						'   <div class="">'+
@@ -356,7 +357,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 						'       <span style="display:none;" class="voice-voice-srch" id="nist-voice-icon-stop" nist-voice="true"><img src="'+this.ExtensionPath+'assets/stop.png" nist-voice="true" /></span>' +
 						'	</div>'+
 						'   <div>'+
-								recbtn +
+								recBtn +
 						'   </div>'+
 						'   <div class="nist-clear"></div>'+
 						'   <div id="nistvoicesearchresults"></div>'+
@@ -391,7 +392,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				jQuery("#nist-voice-icon-start").hide();
 				jQuery("#nist-voice-icon-stop").hide();
 			}
-			if(addnisticon) {
+			if(addIcon) {
 				/*jQuery("#nistvoicerecbtn").click(function () {
 					DigitalAssistantSDK.gettimestamp("start");
 				});*/
@@ -410,30 +411,30 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				jQuery("#nistBtn").hide();
 				jQuery('#nist-steps-content').show();
 				jQuery("#nistModal").css("display", "block");
-				var searchinput=jQuery("#voicesearchinput");
-				searchinput.val("");
+				var SearchInput=jQuery("#voicesearchinput");
+				SearchInput.val("");
 				if (focus) {
-					searchinput.focus();
+					SearchInput.focus();
 				}
 				if(this.InArray(window.location.host,this.AddCustomCssDomains) !== -1) {
-					let bodychildren = document.body.childNodes;
-					if (bodychildren.length > 0) {
-						bodychildren.forEach(function (childnode, childnodeindex) {
-							if (childnode.classList && childnode.classList.contains("container")) {
-								DigitalAssistantSDK.ContainerSections.push(childnodeindex);
-								childnode.classList.remove("container");
+					let bodyChildren = document.body.childNodes;
+					if (bodyChildren.length > 0) {
+						bodyChildren.forEach(function (childNode, childNodeIndex) {
+							if (childNode.classList && childNode.classList.contains("container")) {
+								DigitalAssistantSDK.ContainerSections.push(childNodeIndex);
+								childNode.classList.remove("container");
 							}
-							if (childnode.nodeType === Node.ELEMENT_NODE && (childnode.id !== 'nistBtn' && childnode.id !== 'nist-steps-content') && childnode.nodeName.toLowerCase() !== 'script' && childnode.nodeName.toLowerCase() !== 'noscript' && childnode.nodeName.toLowerCase() !== 'style') {
-								if (childnode.classList && !childnode.classList.contains("nist-original-content")) {
-									childnode.classList.add("nist-original-content");
+							if (childNode.nodeType === Node.ELEMENT_NODE && (childNode.id !== 'nistBtn' && childNode.id !== 'nist-steps-content') && childNode.nodeName.toLowerCase() !== 'script' && childNode.nodeName.toLowerCase() !== 'noscript' && childNode.nodeName.toLowerCase() !== 'style') {
+								if (childNode.classList && !childNode.classList.contains("nist-original-content")) {
+									childNode.classList.add("nist-original-content");
 								}
 							}
 						});
 					}
 				}
 			} else {
-				var sessionevent = new CustomEvent("RequestSessiondata", {detail: {data: "authtenicate"}, bubbles: false, cancelable: false});
-				document.dispatchEvent(sessionevent);
+				var sessionEvent = new CustomEvent("RequestSessiondata", {detail: {data: "authtenicate"}, bubbles: false, cancelable: false});
+				document.dispatchEvent(sessionEvent);
 			}
 		},
 		//closing the UDA screen
@@ -445,20 +446,20 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			jQuery("#nistrecordresults").html("");
 			this.RecordedSequenceIDs=[];
 			jQuery("#nistBtn").show();
-			var navcookiedata = {shownav: false, data: {}, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:''};
-			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navcookiedata));
+			var navCookieData = {shownav: false, data: {}, autoplay:false, pause:false, stop:false, navcompleted:false, navigateddata:[],searchterm:''};
+			this.CreateStorageData(this.NavigationCookieName,JSON.stringify(navCookieData));
 			this.CancelRecordingSequence(false);
 			if(this.InArray(window.location.host,this.AddCustomCssDomains) !== -1) {
-				let bodychildren = document.body.childNodes;
-				if (bodychildren.length > 0) {
-					bodychildren.forEach(function (childnode, childnodeindex) {
-						if (childnode.nodeType === Node.ELEMENT_NODE && (childnode.id !== 'nistBtn' && childnode.id !== 'nist-steps-content') && childnode.nodeName.toLowerCase() !== 'script' && childnode.nodeName.toLowerCase() !== 'noscript' && childnode.nodeName.toLowerCase() !== 'style') {
-							if (childnode.classList && childnode.classList.contains("nist-original-content")) {
-								childnode.classList.remove("nist-original-content");
+				let bodyChildren = document.body.childNodes;
+				if (bodyChildren.length > 0) {
+					bodyChildren.forEach(function (childNode, childNodeIndex) {
+						if (childNode.nodeType === Node.ELEMENT_NODE && (childNode.id !== 'nistBtn' && childNode.id !== 'nist-steps-content') && childNode.nodeName.toLowerCase() !== 'script' && childNode.nodeName.toLowerCase() !== 'noscript' && childNode.nodeName.toLowerCase() !== 'style') {
+							if (childNode.classList && childNode.classList.contains("nist-original-content")) {
+								childNode.classList.remove("nist-original-content");
 							}
 						}
-						if (DigitalAssistantSDK.ContainerSections.length > 0 && DigitalAssistantSDK.InArray(childnodeindex, DigitalAssistantSDK.ContainerSections) !== -1) {
-							childnode.classList.add("container");
+						if (DigitalAssistantSDK.ContainerSections.length > 0 && DigitalAssistantSDK.InArray(childNodeIndex, DigitalAssistantSDK.ContainerSections) !== -1) {
+							childNode.classList.add("container");
 						}
 					});
 				}
@@ -467,31 +468,31 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 		//render the required html for showing up the proper html
 		ShowHtml:function(){
 			this.RerenderHtml=false;
-			var addnisticon=true;
-			var checkrecording = this.GetStorageData(this.RecordingCookieName);
-			if(checkrecording){
-				var checkrecordingdata=JSON.parse(checkrecording);
-				if(checkrecordingdata.hasOwnProperty("recording") && checkrecordingdata.recording){
-					addnisticon=false;
+			var addDigitalAssistantIcon=true;
+			var checkRecording = this.GetStorageData(this.RecordingCookieName);
+			if(checkRecording){
+				var checkRecordingData=JSON.parse(checkRecording);
+				if(checkRecordingData.hasOwnProperty("recording") && checkRecordingData.recording){
+					addDigitalAssistantIcon=false;
 					this.Recording=true;
 					this.OpenModal(false);
 				}
 			}
-			if(addnisticon){
-				this.AddVoiceSearchModal(addnisticon);
-				var navigationcookie=this.GetStorageData(this.NavigationCookieName);
-				if(navigationcookie){
-					var navigationcookiedata = JSON.parse(navigationcookie);
-					if(navigationcookiedata.shownav) {
+			if(addDigitalAssistantIcon){
+				this.AddVoiceSearchModal(addDigitalAssistantIcon);
+				var navigationCookie=this.GetStorageData(this.NavigationCookieName);
+				if(navigationCookie){
+					var navigationCookieData = JSON.parse(navigationCookie);
+					if(navigationCookieData.shownav) {
 						this.OpenModal();
-						if(navigationcookiedata.autoplay){
+						if(navigationCookieData.autoplay){
 							this.AutoPlay=true;
 						}
-						this.ShowSelectedRow(navigationcookiedata.data,navigationcookiedata.data.id,true, navigationcookiedata);
+						this.ShowSelectedRow(navigationCookieData.data,navigationCookieData.data.id,true, navigationCookieData);
 					}
 				}
 			} else {
-				this.AddVoiceSearchModal(addnisticon);
+				this.AddVoiceSearchModal(addDigitalAssistantIcon);
 				this.ShowRecordedResults();
 			}
 		},
@@ -507,7 +508,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			this.ProcessingNodes=false;
 			if(this.ProcessCount<this.TotalCount){
 				//	todo refine the processing nodes.
-				this.indexnewclicknodes();
+				this.IndexNewClickNodes();
 				return;
 			}
 			LastIndexTime=Date.now();
@@ -517,7 +518,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			}
 		},
 		// indexing new clicknodes after new html got loaded
-		indexnewclicknodes:function(){
+		IndexNewClickNodes:function(){
 			if(this.ProcessingNodes){
 				return;
 			}
@@ -527,7 +528,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			}
 			LastIndexTime=Date.now();
 			this.ProcessingNodes=true;
-			this.removefromhtmlindex();
+			this.RemoveFromHtmlIndex();
 			this.IndexNewNodes=true;
 			this.CurrentUrl=window.location.href;
 			this.IndexDom(document.body);
@@ -536,7 +537,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			this.TotalCount=ClickObjects.length;
 			if(this.ProcessCount<this.TotalCount){
 				//todo new nodes added need to reprocess
-				// this.indexnewclicknodes();
+				// this.IndexNewClickNodes();
 				return;
 			}
 			// send all the indexed nodes to server
@@ -544,76 +545,76 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				// this.sendtoserver();
 			}
 		},
-		removefromhtmlindex:function(){
+		RemoveFromHtmlIndex:function(){
 			if(this.IndexedNodes.length>0){
-				let newhtmlindex=[];
-				let htmlindexlength=this.IndexedNodes.length;
-				for(var htmli=0;htmli<htmlindexlength;htmli++) {
-					let checknode=this.IndexedNodes[htmli];
-					let removedclickobjectslength=RemovedClickObjects.length;
-					let foundremovedindexednode=-1;
-					removeclickobjectcounter:
-					for (var k = 0; k < removedclickobjectslength; k++) {
+				let newHtmlIndex=[];
+				let htmlIndexLength=this.IndexedNodes.length;
+				for(var htmlI=0;htmlI<htmlIndexLength;htmlI++) {
+					let checkNode=this.IndexedNodes[htmlI];
+					let removedClickObjectsLength=RemovedClickObjects.length;
+					let foundRemovedIndexedNode=-1;
+					RemoveClickObjectCounter:
+					for (var k = 0; k < removedClickObjectsLength; k++) {
 						if(RemovedClickObjects[k].element === window){
 							continue;
 						}
-						let removedclickobject=RemovedClickObjects[k].element;
+						let removedClickObject=RemovedClickObjects[k].element;
 
-						if (checknode['element-data'].isEqualNode(removedclickobject)) {
-							if(checknode['element-data'].nodeName.toLowerCase()==='textarea'){
-								// jQuery(checknode['element-data']).unbind('click', DigitalAssistantSDK.recorduserclick());
+						if (checkNode['element-data'].isEqualNode(removedClickObject)) {
+							if(checkNode['element-data'].nodeName.toLowerCase()==='textarea'){
+								// jQuery(checkNode['element-data']).unbind('click', DigitalAssistantSDK.recorduserclick());
 							}
-							foundremovedindexednode=k;
-							break removeclickobjectcounter;
+							foundRemovedIndexedNode=k;
+							break RemoveClickObjectCounter;
 						}
 					}
-					if(foundremovedindexednode===-1){
-						newhtmlindex.push(checknode);
+					if(foundRemovedIndexedNode===-1){
+						newHtmlIndex.push(checkNode);
 					} else {
-						RemovedClickObjects.splice(foundremovedindexednode,1);
+						RemovedClickObjects.splice(foundRemovedIndexedNode,1);
 					}
 				}
-				this.IndexedNodes=newhtmlindex;
+				this.IndexedNodes=newHtmlIndex;
 			}
 		},
 		// indexing functionality for the entire dom
-		IndexDom: function(node, ret=false, parentnode="", textlabel="", hasparentnodeclick=false, parentclicknode="" ) {
+		IndexDom: function(node, ret=false, parentNode="", textLabel="", hasParentNodeClick=false, parentClickNode="" ) {
 			switch (node.nodeType) {
 				case Node.ELEMENT_NODE:
 
-					if(!ret && parentnode!=="") {
-						node = this.IndexNode(node, parentnode, hasparentnodeclick, false, parentclicknode);
+					if(!ret && parentNode!=="") {
+						node = this.IndexNode(node, parentNode, hasParentNodeClick, false, parentClickNode);
 					}
 
 					node.haschildclick=false;
 
 					if(node.hasChildNodes()){
-						var childnodes =  node.childNodes;
-						var hasparentclick = false;
-						if(node.hasOwnProperty("hasclick") || hasparentnodeclick){
-							hasparentclick=true;
-							if(parentclicknode===""){
-								parentclicknode=node;
+						var childNodes =  node.childNodes;
+						var hasParentClick = false;
+						if(node.hasOwnProperty("hasclick") || hasParentNodeClick){
+							hasParentClick=true;
+							if(parentClickNode===""){
+								parentClickNode=node;
 							}
 						}
 
-						if(childnodes.length>0){
-							for (var i=0;i<childnodes.length;i++){
-								var childnode=childnodes[i];
+						if(childNodes.length>0){
+							for (var i=0;i<childNodes.length;i++){
+								var childNode=childNodes[i];
 								this.NodeId++;
-								if(this.IgnoreElements.indexOf(childnode.nodeName.toLowerCase())===-1) {
+								if(this.IgnoreElements.indexOf(childNode.nodeName.toLowerCase())===-1) {
 									if(ret){
-										if(textlabel===""){
-											textlabel = this.IndexDom(childnode, ret, node, textlabel);
+										if(textLabel===""){
+											textLabel = this.IndexDom(childNode, ret, node, textLabel);
 										}else {
-											textlabel += " " + this.IndexDom(childnode, ret, node, textlabel);
+											textLabel += " " + this.IndexDom(childNode, ret, node, textLabel);
 										}
 									} else {
-										node.childNodes[i] = this.IndexDom(childnode, ret, node,"", hasparentclick, parentclicknode);
+										node.childNodes[i] = this.IndexDom(childNode, ret, node,"", hasParentClick, parentClickNode);
 										if(node.childNodes[i].hasOwnProperty("hasclick") && node.childNodes[i].hasclick && node.childNodes[i].textContent!==""){
 											node.haschildclick=true;
 										}
-										if(hasparentclick && node.childNodes[i].hasOwnProperty("haschildclick") && node.childNodes[i].haschildclick){
+										if(hasParentClick && node.childNodes[i].hasOwnProperty("haschildclick") && node.childNodes[i].haschildclick){
 											node.haschildclick=true;
 										}
 									}
@@ -633,36 +634,36 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 					break;
 				case Node.TEXT_NODE:
 					if(node.nodeValue!=="") {
-						textlabel = node.nodeValue;
+						textLabel = node.nodeValue;
 					}
 					break;
 			}
 
-			if(ret && textlabel!==""){
-				return textlabel;
+			if(ret && textLabel!==""){
+				return textLabel;
 			} else if(!ret) {
 				return node;
 			}
 		},
 		// Check for each node and then match it with the available clicknodes which are identified by links.js
-		IndexNode: function(node, parentnode, hasparentnodeclick=false, fromdocumentclick=false, parentclicknode=""){
-			var elementdata = {"element-type": "", "element-labels" : [], "element-action" : "", "element-path" : "","element-url":"", "element-data":[],"menu-items":[]};
+		IndexNode: function(node, parentNode, hasParentNodeClick=false, fromDocumentClick=false, parentClickNode=""){
+			var elementData = {"element-type": "", "element-labels" : [], "element-action" : "", "element-path" : "","element-url":"", "element-data":[],"menu-items":[]};
 
-			if(parentnode.classList && parentnode.classList.contains("tab-content")){
+			if(parentNode.classList && parentNode.classList.contains("tab-content")){
 				node.displaytype = "tab-content";
 				node.tabid = node.id;
 			}
 
-			var clickobjectexists=false;
-			var clickobject={};
+			var clickObjectExists=false;
+			var clickObject={};
 
 			if(node.hasAttribute("nist-voice") && node.getAttribute("nist-voice")){
 				return node;
 			}
 
 			if(this.IndexedNodes.length>0){
-				for(var htmli=0; htmli<this.IndexedNodes.length; htmli++){
-					if(node.isEqualNode(this.IndexedNodes[htmli]['element-data'])){
+				for(var htmlI=0; htmlI<this.IndexedNodes.length; htmlI++){
+					if(node.isEqualNode(this.IndexedNodes[htmlI]['element-data'])){
 						node.hasclick=true;
 						return node;
 					}
@@ -674,8 +675,8 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 					continue;
 				}
 				if (node.isEqualNode(ClickObjects[i].element)) {
-					clickobjectexists = true;
-					clickobject = ClickObjects[i];
+					clickObjectExists = true;
+					clickObject = ClickObjects[i];
 				}
 			}
 
@@ -683,25 +684,25 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				return node;
 			}
 
-			if(fromdocumentclick){
-				clickobjectexists = true;
-				clickobject = node;
+			if(fromDocumentClick){
+				clickObjectExists = true;
+				clickObject = node;
 			}
 
-			if(clickobjectexists){
+			if(clickObjectExists){
 				node.hasclick=true;
-				elementdata["element-type"] = node.nodeName.toLowerCase();
-				elementdata["element-url"] =  window.location.href;
+				elementData["element-type"] = node.nodeName.toLowerCase();
+				elementData["element-url"] =  window.location.href;
 
-				if(parentnode.classList && parentnode.classList.contains("tab-content")){
+				if(parentNode.classList && parentNode.classList.contains("tab-content")){
 					node.displaytype = "tab-content";
 				}
 
-				if(elementdata["element-labels"].length===0){
-					elementdata["element-labels"] = this.GetInputLabels(node,[],1);
+				if(elementData["element-labels"].length===0){
+					elementData["element-labels"] = this.GetInputLabels(node,[],1);
 				}
 
-				if(elementdata["element-labels"].length===0){
+				if(elementData["element-labels"].length===0){
 					return node;
 				}
 
@@ -724,37 +725,37 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 					}
 				}
 
-				if(elementdata["element-path"]==="") {
+				if(elementData["element-path"]==="") {
 					if (node.hasOwnProperty("path")) {
-						elementdata["element-path"] = node.path;
+						elementData["element-path"] = node.path;
 					}
 				}
 
 				if(node.getAttribute("data-toggle") && node.getAttribute("data-toggle")==="tab"){
 					node.navtype="navtab";
-					elementdata["element-action"] = "navtab";
+					elementData["element-action"] = "navtab";
 				}
-				elementdata["element-data"] = node;
-				elementdata["clickobject"] = clickobject;
+				elementData["element-data"] = node;
+				elementData["clickObject"] = clickObject;
 
-				this.IndexedNodes.push(elementdata);
+				this.IndexedNodes.push(elementData);
 
 				// add click to node to send what user has clicked.
 				// this.addClickToNode(node);
 
 				// remove parent click recording if childnode has click
-				/*if(hasparentnodeclick && parentclicknode!==""){
-					console.log({parentnode:parentclicknode});
-					jQuery(parentclicknode).unbind('click', DigitalAssistantSDK.recorduserclick(parentclicknode));
-					// jQuery(parentclicknode).unbind('click');
-					if(parentclicknode.removeEventListener){
-						// parentclicknode.removeEventListener("click",DigitalAssistantSDK.recorduserclick);
+				/*if(hasParentNodeClick && parentClickNode!==""){
+					console.log({parentNode:parentClickNode});
+					jQuery(parentClickNode).unbind('click', DigitalAssistantSDK.recorduserclick(parentClickNode));
+					// jQuery(parentClickNode).unbind('click');
+					if(parentClickNode.removeEventListener){
+						// parentClickNode.removeEventListener("click",DigitalAssistantSDK.recorduserclick);
 					}
 				}*/
 				let dga = {hasparentclick: false, parentnode: {}};
-				if(hasparentnodeclick) {
+				if(hasParentNodeClick) {
 					dga.hasparentclick = true;
-					dga.parentnode = parentnode;
+					dga.parentnode = parentNode;
 				}
 				node.dga = dga;
 			}
@@ -762,16 +763,16 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			return node;
 		},
 		// getting the text for the clicknodes.
-		GetInputLabels: function(node, inputlabels, iterationno, iterate=true, getchildlabels=true, fromclick=false, iteratelimit=3, ignorenode=[]){
+		GetInputLabels: function(node, inputLabels, iterationNo, iterate=true, getChildLabels=true, fromClick=false, iterateLimit=3, ignoreNode=[]){
 
-			if(Array.isArray(ignorenode)){
-				ignorenode=node;
+			if(Array.isArray(ignoreNode)){
+				ignoreNode=node;
 			}
 
-			if((node.nodeName.toLowerCase() === "select" || node.nodeName.toLowerCase() === "checkbox") && iterate && inputlabels.length===0){
-				iterationno++;
-				inputlabels = this.GetInputLabels(node.parentNode, inputlabels, iterationno, iterate, true, fromclick, iteratelimit, ignorenode);
-				if(fromclick) {
+			if((node.nodeName.toLowerCase() === "select" || node.nodeName.toLowerCase() === "checkbox") && iterate && inputLabels.length===0){
+				iterationNo++;
+				inputLabels = this.GetInputLabels(node.parentNode, inputLabels, iterationNo, iterate, true, fromClick, iterateLimit, ignoreNode);
+				if(fromClick) {
 					//todo need to rework
 				}
 			}
@@ -779,83 +780,83 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			if(node.nodeName.toLowerCase() === "input" || node.nodeName.toLowerCase() === "textarea" || node.nodeName.toLowerCase() === "img"){
 
 				if(node.getAttribute("placeholder") && node.getAttribute("placeholder")!=="") {
-					inputlabels.push({"text":node.getAttribute("placeholder").toString(),"match":false});
+					inputLabels.push({"text":node.getAttribute("placeholder").toString(),"match":false});
 				}
 				if(node.getAttribute("type") && (node.getAttribute("type").toLowerCase()==="submit" || node.getAttribute("type").toLowerCase()==="file")) {
 					if(node.getAttribute("value")){
-						inputlabels.push({"text":node.getAttribute("value").toString(),"match":false});
+						inputLabels.push({"text":node.getAttribute("value").toString(),"match":false});
 						iterate=false;
 					}
 				}
 				if(node.getAttribute("alt")){
-					inputlabels.push({"text":node.getAttribute("alt").toString(),"match":false});
+					inputLabels.push({"text":node.getAttribute("alt").toString(),"match":false});
 				}
 			}
 
 
 
-			if(getchildlabels && node.childNodes.length>0){
-				var childnodes = node.childNodes;
-				childnodes.forEach(function (childnode, key) {
-					if(childnode.nodeName.toLowerCase()!=="script" || childnode.nodeName.toLowerCase()!=="select") {
-						var textcontent = childnode.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
-						if (textcontent !== "" && ignorenode.isEqualNode(childnode) === false) {
-							inputlabels.push({"text": textcontent, "match": false});
+			if(getChildLabels && node.childNodes.length>0){
+				var childNodes = node.childNodes;
+				childNodes.forEach(function (childNode, key) {
+					if(childNode.nodeName.toLowerCase()!=="script" || childNode.nodeName.toLowerCase()!=="select") {
+						var textContent = childNode.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
+						if (textContent !== "" && ignoreNode.isEqualNode(childNode) === false) {
+							inputLabels.push({"text": textContent, "match": false});
 						}
 					}
 				});
 			}
 
-			if(inputlabels.length===0 && node.getAttribute("data-tooltip")){
-				inputlabels.push({"text":node.getAttribute("data-tooltip").toString(),"match":false});
+			if(inputLabels.length===0 && node.getAttribute("data-tooltip")){
+				inputLabels.push({"text":node.getAttribute("data-tooltip").toString(),"match":false});
 			}
 
-			if(inputlabels.length===0 && node.getAttribute("aria-label")){
-				inputlabels.push({"text":node.getAttribute("aria-label").toString(),"match":false});
+			if(inputLabels.length===0 && node.getAttribute("aria-label")){
+				inputLabels.push({"text":node.getAttribute("aria-label").toString(),"match":false});
 			}
 
 			//todo fix for image tags
-			if(iterate && node.nodeName.toLowerCase() !== "img" && inputlabels.length === 0 && iterationno<=iteratelimit){
-				iterationno++;
-				inputlabels = this.GetInputLabels(node.parentNode,[], iterationno, iterate, getchildlabels, fromclick, iteratelimit);
+			if(iterate && node.nodeName.toLowerCase() !== "img" && inputLabels.length === 0 && iterationNo<=iterateLimit){
+				iterationNo++;
+				inputLabels = this.GetInputLabels(node.parentNode,[], iterationNo, iterate, getChildLabels, fromClick, iterateLimit);
 			}
 
-			if(inputlabels.length===0 && node.id!==""){
-				inputlabels.push({"text":(node.nodeName.toLowerCase()+"-"+node.id),"match":false});
-			}else if(inputlabels.length===0 && node.hasAttribute("class") && node.className && node.className!==""){
-				var classname=node.className.toString();
-				inputlabels.push({"text":(node.nodeName.toLowerCase()+"-"+classname.replace(" ","-")),"match":false});
-			} else if(inputlabels.length===0){
-				inputlabels.push({"text":(node.nodeName.toLowerCase()),"match":false});
+			if(inputLabels.length===0 && node.id!==""){
+				inputLabels.push({"text":(node.nodeName.toLowerCase()+"-"+node.id),"match":false});
+			}else if(inputLabels.length===0 && node.hasAttribute("class") && node.className && node.className!==""){
+				var className=node.className.toString();
+				inputLabels.push({"text":(node.nodeName.toLowerCase()+"-"+className.replace(" ","-")),"match":false});
+			} else if(inputLabels.length===0){
+				inputLabels.push({"text":(node.nodeName.toLowerCase()),"match":false});
 			}
 
-			return inputlabels;
+			return inputLabels;
 		},
 		GetSingleInputLabel: function(parentnode, inputlabel){
-			var childnodes = parentnode.childNodes;
+			var childNodes = parentnode.childNodes;
 
-			childnodes.forEach(function (childnode, key) {
+			childNodes.forEach(function (childNode, key) {
 				if(inputlabel === ""){
-					inputlabel = childnode.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
+					inputlabel = childNode.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
 				}
 			});
 
 			if(inputlabel === ""){
-				inputlabel = this.getinputlabel(parentnode.parentNode,"");
+				inputlabel = this.GetInputLabels(parentnode.parentNode,"");
 			}
 
 			return inputlabel;
 		},
-		AddClickToNode:function(node, confirmdialog=false){
+		AddClickToNode:function(node, confirmDialog=false){
 			if(node.hasOwnProperty("addedclickrecord") && node.addedclickrecord===true){
 				return;
 			}
 
-			var nodename=node.nodeName.toLowerCase();
-			switch (nodename) {
+			var nodeName=node.nodeName.toLowerCase();
+			switch (nodeName) {
 				case "select":
 					jQuery(node).on({"focus":function(event){
-							DigitalAssistantSDK.RecordUserClick(node, false,false, event, confirmdialog);
+							DigitalAssistantSDK.RecordUserClick(node, false,false, event, confirmDialog);
 						}
 					});
 					break;
@@ -863,8 +864,8 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 					if(!node.hasAttribute("type")){
 						return;
 					}
-					var inputtype=node.getAttribute("type").toLowerCase();
-					switch (inputtype) {
+					var inputType=node.getAttribute("type").toLowerCase();
+					switch (inputType) {
 						case "email":
 						case "text":
 						case "button":
@@ -889,24 +890,24 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 						case "url":
 						case "week":
 							jQuery(node).click(function (event) {
-								DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
+								DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmDialog);
 							});
 							break;
 						default:
 							jQuery(node).click(function (event) {
-								DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
+								DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmDialog);
 							});
 							break;
 					}
 					break;
 				case "mat-select":
 					jQuery(node).click(function (event) {
-						DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
+						DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmDialog);
 					});
 					break;
 				default:
 					jQuery(node).click(function (event) {
-						DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmdialog);
+						DigitalAssistantSDK.RecordUserClick(node, false, false, event, confirmDialog);
 					});
 					break;
 			}
@@ -915,32 +916,32 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 		},
 		//searching all the nodes for the given input
 		SearchNodes: function(){
-			var searchtext = jQuery("#voicesearchinput").val();
-			var matchnodes = [];
-			if(searchtext !== "" && this.IndexedNodes.length>0){
+			var searchText = jQuery("#voicesearchinput").val();
+			var matchNodes = [];
+			if(searchText !== "" && this.IndexedNodes.length>0){
 				for(var i=0; i<this.IndexedNodes.length; i++){
-					var searchnode = this.IndexedNodes[i];
-					var searchlabelexists=false;
-					for(var j=0;j<searchnode['element-labels'].length;j++){
-						var label = searchnode['element-labels'][j].text.toString().toLowerCase();
-						if(label.indexOf(searchtext.toString().toLowerCase()) !==-1){
-							searchlabelexists=true;
-							searchnode['element-labels'][j].match=true;
+					var searchNode = this.IndexedNodes[i];
+					var searchLabelExists=false;
+					for(var j=0;j<searchNode['element-labels'].length;j++){
+						var label = searchNode['element-labels'][j].text.toString().toLowerCase();
+						if(label.indexOf(searchText.toString().toLowerCase()) !==-1){
+							searchLabelExists=true;
+							searchNode['element-labels'][j].match=true;
 						}
 					}
-					if(searchlabelexists){
-						matchnodes.push(searchnode);
+					if(searchLabelExists){
+						matchNodes.push(searchNode);
 					}
 				}
 			}
-			if(matchnodes.length>0){
-				if(matchnodes.length===1){
-					this.MatchAction(matchnodes[0]);
+			if(matchNodes.length>0){
+				if(matchNodes.length===1){
+					this.MatchAction(matchNodes[0]);
 					return;
 				}
 				this.RenderSearchResults();
-				for(var k=0;k<matchnodes.length;k++){
-					this.RenderResultRow(matchnodes[k],k);
+				for(var k=0;k<matchNodes.length;k++){
+					this.RenderResultRow(matchNodes[k],k);
 				}
 			}
 		},
@@ -992,22 +993,22 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 				this.CloseModal();
 			}
 			var node=data["element-data"];
-			var timetoinvoke=1000;
+			var timeToInvoke=1000;
 
 			// intro js issue fix
-			let addintrostep=true;
-			let introstepindex=0;
+			let addIntroStep=true;
+			let introStepIndex=0;
 			if(this.IntroJsAddedStepNodes.length>0){
-				for(var introi=0; introi<this.IntroJsAddedStepNodes.length; introi++){
-					if(node.isEqualNode(this.IntroJsAddedStepNodes[introi])){
-						addintrostep=false;
-						introstepindex=introi;
+				for(var introI=0; introI<this.IntroJsAddedStepNodes.length; introI++){
+					if(node.isEqualNode(this.IntroJsAddedStepNodes[introI])){
+						addIntroStep=false;
+						introStepIndex=introI;
 					}
 				}
 			}
 			switch (node.nodeName.toLowerCase()) {
 				case "input":
-					if(addintrostep) {
+					if(addIntroStep) {
 						this.IntroJsTotalSteps++;
 						this.IntroJsCurrentStepNumber++;
 						this.IntroJsAddedStepNodes.push(node);
@@ -1016,11 +1017,11 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 							intro: "Please input in the field and then continue."
 						}).goToStepNumber(this.IntroJsCurrentStepNumber).start();
 					} else {
-						this.IntroJS.goToStepNumber(introstepindex).start();
+						this.IntroJS.goToStepNumber(introStepIndex).start();
 					}
 					break;
 				case "textarea":
-					if(addintrostep) {
+					if(addIntroStep) {
 						this.IntroJsTotalSteps++;
 						this.IntroJsCurrentStepNumber++;
 						this.IntroJsAddedStepNodes.push(node);
@@ -1029,13 +1030,13 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 							intro: "Please select the value and then continue."
 						}).goToStepNumber(this.IntroJsCurrentStepNumber).start();
 					} else {
-						this.IntroJS.goToStepNumber(introstepindex).start();
+						this.IntroJS.goToStepNumber(introStepIndex).start();
 					}
 					break;
 				case "select":
 					var inputlabel=this.GetClickedInputLabels(node);
 					var labelmatch=false;
-					if(addintrostep) {
+					if(addIntroStep) {
 						this.IntroJsTotalSteps++;
 						this.IntroJsCurrentStepNumber++;
 						this.IntroJsAddedStepNodes.push(node);
@@ -1044,7 +1045,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 							intro: "Please select the value and then continue."
 						}).goToStepNumber(this.IntroJsCurrentStepNumber).start();
 					} else {
-						this.IntroJS.goToStepNumber(introstepindex).start();
+						this.IntroJS.goToStepNumber(introStepIndex).start();
 					}
 					break;
 				case "option":
@@ -1052,22 +1053,22 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 					break;
 				case "checkbox":
 					node.click();
-					this.InvokeNextItem(node,timetoinvoke);
+					this.InvokeNextItem(node,timeToInvoke);
 					break;
 				default:
 					node.click();
-					this.InvokeNextItem(node,timetoinvoke);
+					this.InvokeNextItem(node,timeToInvoke);
 			}
 		},
 		//invoke the click of next item
-		InvokeNextItem:function(node, timetoinvoke){
+		InvokeNextItem:function(node, timeToInvoke){
 			var link=false;
-			timetoinvoke=timetoinvoke+4000;
+			timeToInvoke=timeToInvoke+4000;
 			if(node.hasOwnProperty("href")){
 				link=true;
 			}
 			if(!link) {
-				setTimeout(function(){DigitalAssistantSDK.ShowHtml();}, timetoinvoke);
+				setTimeout(function(){DigitalAssistantSDK.ShowHtml();}, timeToInvoke);
 			}
 		},
 		//firing an event if event available for the node. Currently not implemented
@@ -1087,23 +1088,23 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 		},
 		// sending all the indexed nodes to server
 		SendToServer: function(){
-			var indexednodes = this.IndexedNodes;
+			var indexedNodes = this.IndexedNodes;
 			var items = [];
-			if(indexednodes.length>0){
-				for(var i=0;i<indexednodes.length;i++){
-					var itemdata = {id:'', textlabels:[], path:'', objectdata:''};
-					var indexednode = indexednodes[i];
-					itemdata.id = indexednode.clickobject.id;
-					if(indexednode["element-labels"].length>0){
-						var textlabels=[];
-						for(var j=0;j<indexednode["element-labels"].length;j++){
-							textlabels.push(indexednode["element-labels"][j].text);
+			if(indexedNodes.length>0){
+				for(var i=0;i<indexedNodes.length;i++){
+					var itemData = {id:'', textlabels:[], path:'', objectdata:''};
+					var indexedNode = indexedNodes[i];
+					itemData.id = indexedNode.clickobject.id;
+					if(indexedNode["element-labels"].length>0){
+						var textLabels=[];
+						for(var j=0;j<indexedNode["element-labels"].length;j++){
+							textLabels.push(indexedNode["element-labels"][j].text);
 						}
-						itemdata.textlabels = textlabels.toString();
+						itemData.textlabels = textLabels.toString();
 					}
-					itemdata.path = indexednode["element-path"];
-					itemdata.objectdata=JSON.stringify(domJSON.toJSON(indexednode["element-data"]));
-					items.push(itemdata);
+					itemData.path = indexedNode["element-path"];
+					itemData.objectdata=JSON.stringify(domJSON.toJSON(indexedNode["element-data"]));
+					items.push(itemData);
 				}
 				var data = {sessionid:this.SessionID,domain:window.location.host,urlpath:window.location.pathname, clickednodename:"", data:JSON.stringify(items)};
 				var clickednodenamedata=this.GetStorageData(this.RecordClickNodeCookieName);
@@ -1221,7 +1222,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			xhr.send(outputdata);
 
 			//processing new clicknodes if available after the click action.
-			setTimeout(function (){DigitalAssistantSDK.indexnewclicknodes();},PostInterval);
+			setTimeout(function (){DigitalAssistantSDK.IndexNewClickNodes();},PostInterval);
 
 			// rerender html if recording is enabled.
 			if(this.Recording) {
@@ -1957,7 +1958,7 @@ if (typeof DigitalAssistantSDK === 'undefined') {
 			jQuery("#nistvoicesearchresults").html('');
 		}
 	};
-	DigitalAssistantSDK.init();
+	DigitalAssistantSDK.Init();
 } else {
 	// this script has already been loaded
 }
