@@ -1,15 +1,5 @@
-.voice-redmine-rght{
-	position:fixed;
-	top:0px;
-	right: 0px;
-	bottom: 0px;
-}
-.nist-original-content{
-	max-width: 80%;
-	float: left;
-}
-.nist-original-content .kt-header,.nist-original-content .kt-header--fixed{
-	max-width: 80%;
+.uda-original-content .kt-header,.uda-original-content .kt-header--fixed{
+	max-width: 77%;
 }
 .duration-picker .pick{
 	position: relative;
@@ -17,4 +7,12 @@
 }
 .duration-picker .pick input{
 	border:1px solid #e2e5ec !important;
+}
+
+kt-base.ng-star-inserted.uda-original-content {
+	max-width: 77% !important;
+}
+
+kt-base.uda-original-content {
+	max-width: 99% !important;
 }

@@ -1,16 +1,32 @@
-.voice-redmine-rght{
-	position:fixed;
-	top:0px;
-	right: 0px;
-	bottom: 0px;
+.uda-original-content .navbar-fixed-top{
+	/*max-width: 77%;*/
 }
-.nist-original-content{
-	max-width: 80%;
-	float: left;
+.uda-original-content .vc_topbar{
+	max-width: 77%;
 }
-.nist-original-content .navbar-fixed-top{
-	max-width: 80%;
+.uda-original-content .modal .modal-content {
+	max-width: 77%;
 }
-.nist-original-content .vc_topbar{
-	max-width: 80%;
+
+.hf_container{
+	max-width : 100%;
+}
+@media (max-width: 1348px) {
+    .vc_home_spc{
+    	width: 90% !important;
+    }
+}
+@media screen and (max-width: 1366px), screen and ( max-height: 768px) {
+    .jcarousel ul {
+	    width: 100%;
+	    position: relative;
+	    display: -webkit-inline-box;
+	}
+	.jcarousel li {
+	    width: 33.33% !important;
+	}
+	.vc_home_spc{
+		max-width: 90%;
+		margin: 0 auto;
+	}
 }
