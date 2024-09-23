@@ -60,7 +60,7 @@ function App(props) {
     const [page, setPage] = useState<number>(0);
     const [hasMorePages, setHasMorePages] = useState<boolean>(true);
     const [reFetchSearch, setReFetchSearch] = useState<string>("off");
-    const [recSequenceData, setRecSequenceData] = useState<any>(getFromStore(CONFIG.RECORDING_SEQUENCE, false) || []);
+    const [recSequenceData, setRecSequenceData] = useState<any>([]);
     const [
         recordSequenceDetailsVisibility,
         setRecordSequenceDetailsVisibility,
@@ -282,7 +282,7 @@ function App(props) {
         await initSpecialNodes();
         if(searchParams.get(CONFIG.UDA_URL_Param)){
             let searchId = searchParams.get(CONFIG.UDA_URL_Param);
-            recordUserClickData('searchRecordingId', '', parseInt(searchId));
+            await recordUserClickData('searchRecordingId', window.location.host, parseInt(searchId));
             let recordDetails = await fetchRecord({
                 id: searchParams.get(CONFIG.UDA_URL_Param),
                 domain: encodeURI(fetchDomain()),
@@ -310,16 +310,6 @@ function App(props) {
         }
     };
 
-    const updateRecordedData = async () => {
-        let recordingData = getFromStore(CONFIG.RECORDING_SEQUENCE, false);
-        // console.log(recordingData);
-        if(recordingData.length > 0) {
-            setRecSequenceData(recordingData);
-        } else {
-            setRecSequenceData([]);
-        }
-    }
-
     /**
      * Initializing functionality on start of the application
      */
@@ -332,7 +322,6 @@ function App(props) {
         on("UDAClearSessionData", clearSession);
         on("openPanel", openPanel);
         on("closePanel", closePanel);
-        on("updateRecordedData", updateRecordedData);
 
         /**
          * Asynchronous function to be get called in the beginning
@@ -382,7 +371,6 @@ function App(props) {
             off("UDAAlertMessageData", authenticationError);
             off("openPanel", openPanel);
             off("closePanel", closePanel);
-            off("updateRecordedData", updateRecordedData);
         };
     }, []);
 
@@ -411,13 +399,13 @@ function App(props) {
     /**
      * Sync data with storage
      */
-    /*useInterval(() => {
+    useInterval(() => {
         let recordingData = getFromStore(CONFIG.RECORDING_SEQUENCE, false);
         // console.log(recordingData);
         if(recordingData.length > 0) {
             setRecSequenceData(recordingData);
         }
-    }, CONFIG.SYNC_INTERVAL);*/
+    }, CONFIG.SYNC_INTERVAL);
 
     /**
      * Toggle right side panel visibility
@@ -513,7 +501,7 @@ function App(props) {
         setShowRecord(false);
         setReFetchSearch("");
         setShowSearch(false);
-        recordUserClickData('recordingStart');
+        await recordUserClickData('recordingStart', window.location.host);
         await addBodyEvents();
     };
 
@@ -543,12 +531,12 @@ function App(props) {
     const recordHandler = async (type: string, data?: any) => {
         switch (type) {
             case "submit":
-                recordUserClickData('recordingSubmit');
+                await recordUserClickData('recordingSubmit', window.location.host);
                 await postRecordSequenceData({ ...data });
                 await setSearchKeyword("");
                 break;
             case "cancel":
-                recordUserClickData('recordingStop');
+                await recordUserClickData('recordingStop', window.location.host);
                 setIsRecording(false);
                 await setSearchKeyword("");
                 break;

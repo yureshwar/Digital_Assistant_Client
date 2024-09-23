@@ -19,7 +19,6 @@ import {isHighlightNode} from "../util/checkNode";
 import {Alert, notification, Progress, Space, Switch} from "antd";
 import {UDAErrorLogger} from "../config/error-log";
 import {addNotification} from "../util/addNotification";
-import {trigger} from "../util/events";
 
 export interface MProps {
     sequenceName?: string;
@@ -56,15 +55,11 @@ export const RecordedData = (props: MProps) => {
     const [savingError, setSavingError] = useState<boolean>(false);
     const [slowPlayback, setSlowPlayback] = useState<boolean>(false);
     const [delayPlaybackTime, setDelayPlaybackTime] = useState<number>(1);
-    const [customMetdata, setCustomMetdata] = useState<any>({});
+    const [customMetdata, setCustomMetdata] = useState<string>(null);
 
     useEffect(() => {
         setRecordData([...(props.data || [])]);
     }, [props.data]);
-
-    useEffect(() => {
-        setCustomMetdata({});
-    }, [recordData]);
 
     /**
      * @param data
@@ -216,7 +211,6 @@ export const RecordedData = (props: MProps) => {
             props.recordHandler("cancel");
         }
         setToStore([], CONFIG.RECORDING_SEQUENCE, false);
-        trigger("updateRecordedData",{});
     };
 
     /**
@@ -383,7 +377,6 @@ export const RecordedData = (props: MProps) => {
         if (props.recordHandler) props.recordHandler("cancel");
         setToStore(false, CONFIG.RECORDING_SWITCH_KEY, true);
         setToStore([], CONFIG.RECORDING_SEQUENCE, false);
-        trigger("updateRecordedData",{});
     };
 
     const [timer, setTimer] = useState(null);
@@ -550,10 +543,8 @@ export const RecordedData = (props: MProps) => {
         props.showLoader(true);
         const _objData = getObjData(recordData[index]?.objectdata);
         if (_objData) {
-            if (customMetdata[key]) {
-                _objData.meta[key] = customMetdata[key];
-            }
-            // _objData.meta[key] = customMetdata[key]
+            if (_objData.meta[key] === undefined) _objData.meta[key] = customMetdata;
+            _objData.meta[key] = customMetdata
             recordData[index].objectdata = TSON.stringify(_objData);
             storeRecording(recordData);
         }
@@ -708,99 +699,51 @@ export const RecordedData = (props: MProps) => {
                                     </>
                                 }
                                 <SelectedElement data={item} index={index} recordData={recordData} config={props.config} storeRecording={storeRecording}/>
-                                {/* add conditional rendering*/}
-                                {global.UDAGlobalConfig.enableAISearch && <>
-                                    <>
-                                        <div className="uda-recording uda_exclude" style={{textAlign: "center"}}>
-                                            {(objectData.meta?.inputType && !customMetdata['input']) &&
-                                                <>
-                                                    <input type="text" id="uda-edited-customMetaData" name="uda-edited-customMetaData"
-                                                           className="uda-form-input uda_exclude"
-                                                           placeholder={translate('customMetaData')}
-                                                           style={{width: "68% !important"}}
-                                                           onChange={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputType: e.target.value});
-                                                           }}
-                                                           onBlur={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputType: e.target.value});
-                                                           }}
-                                                           value={objectData.meta?.inputType}/>
-                                                </>
-                                            }
-                                            {(!objectData.meta?.inputType || customMetdata.inputType) &&
-                                                <>
-                                                    <input type="text" id="uda-edited-customMetaData" name="uda-edited-customMetaData"
-                                                           className="uda-form-input uda_exclude"
-                                                           placeholder={translate('customMetaData')}
-                                                           style={{width: "68% !important"}}
-                                                           onChange={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputType: e.target.value});
-                                                           }}
-                                                           onBlur={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputType: e.target.value});
-                                                           }}
-                                                           value={customMetdata.inputType}/>
-                                                </>
-                                            }
-                                            <span>
-                                                  <button
-                                                      className={`uda-tutorial-btn uda_exclude ${(disableTooltipSubmitBtn) ? "disabled" : ""}`}
-                                                      style={{color: "#fff", marginTop: "10px"}}
-                                                      id="uda-customMetadata-save"
-                                                      onClick={async () => {
-                                                          await updateMetadata('inputType', index)
-                                                      }}>{(!objectData.meta?.inputType)?translate('submit'):translate('update')}
-                                                  </button>
+                                <>
+                                    <div className="uda-recording uda_exclude" style={{textAlign: "center"}}>
+                                        {(objectData.meta?.customMetaData && !customMetdata) &&
+                                            <>
+                                                <input type="text" id="uda-edited-customMetaData" name="uda-edited-customMetaData"
+                                                       className="uda-form-input uda_exclude"
+                                                       placeholder={translate('customMetaDataPlaceHolder')}
+                                                       style={{width: "68% !important"}}
+                                                       onChange={async (e: any) => {
+                                                           setCustomMetdata(e.target.value);
+                                                       }}
+                                                       onBlur={async (e: any) => {
+                                                           setCustomMetdata(e.target.value);
+                                                       }}
+                                                       value={objectData.meta?.customMetaData}/>
+                                            </>
+                                        }
+                                        {(!objectData.meta?.customMetaData || customMetdata) &&
+                                            <>
+                                                <input type="text" id="uda-edited-customMetaData" name="uda-edited-customMetaData"
+                                                       className="uda-form-input uda_exclude"
+                                                       placeholder={translate('customMetaDataPlaceHolder')}
+                                                       style={{width: "68% !important"}}
+                                                       onChange={async (e: any) => {
+                                                           setCustomMetdata(e.target.value);
+                                                       }}
+                                                       onBlur={async (e: any) => {
+                                                           setCustomMetdata(e.target.value);
+                                                       }}
+                                                       value={customMetdata}/>
+                                            </>
+                                        }
+                                        <span>
+                                              <button
+                                                  className={`uda-tutorial-btn uda_exclude ${(disableTooltipSubmitBtn) ? "disabled" : ""}`}
+                                                  style={{color: "#fff", marginTop: "10px"}}
+                                                  id="uda-customMetadata-save"
+                                                  onClick={async () => {
+                                                      await updateMetadata('customMetaData', index)
+                                                  }}>{(!objectData.meta?.customMetaData)?translate('submit'):translate('update')}</button>
                                             </span>
-                                        </div>
-                                    </>
-                                    <>
-                                        <div className="uda-recording uda_exclude" style={{textAlign: "center"}}>
-                                            {(objectData.meta?.inputTypeDescription && !customMetdata['inputTypeDescription']) &&
-                                                <>
-                                                    <input type="text" id="uda-edited-customMetaDataDescription" name="uda-edited-customMetaData"
-                                                           className="uda-form-input uda_exclude"
-                                                           placeholder={translate('customMetadataDescriptionPlaceHolder')}
-                                                           style={{width: "68% !important"}}
-                                                           onChange={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputTypeDescription: e.target.value});
-                                                           }}
-                                                           onBlur={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputTypeDescription: e.target.value});
-                                                           }}
-                                                           value={objectData.meta?.inputTypeDescription}/>
-                                                </>
-                                            }
-                                            {(!objectData.meta?.inputTypeDescription || customMetdata.inputTypeDescription) &&
-                                                <>
-                                                    <input type="text" id="uda-edited-customMetaDataDescription" name="uda-edited-customMetaData"
-                                                           className="uda-form-input uda_exclude"
-                                                           placeholder={translate('customMetadataDescriptionPlaceHolder')}
-                                                           style={{width: "68% !important"}}
-                                                           onChange={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputTypeDescription: e.target.value});
-                                                           }}
-                                                           onBlur={async (e: any) => {
-                                                               setCustomMetdata({...customMetdata, inputTypeDescription: e.target.value});
-                                                           }}
-                                                           value={customMetdata.inputTypeDescription}/>
-                                                </>
-                                            }
-                                            <span>
-                                                  <button
-                                                      className={`uda-tutorial-btn uda_exclude ${(disableTooltipSubmitBtn) ? "disabled" : ""}`}
-                                                      style={{color: "#fff", marginTop: "10px"}}
-                                                      id="uda-customMetadataDescription-save"
-                                                      onClick={async () => {
-                                                          await updateMetadata('inputTypeDescription', index)
-                                                      }}>{(!objectData.meta?.inputTypeDescription)?translate('submit'):translate('update')}
-                                                  </button>
-                                            </span>
-                                        </div>
-                                    </>
+                                    </div>
                                 </>
-                                }
                             </>
+
                         )}
                     </li>
                 );
