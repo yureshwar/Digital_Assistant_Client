@@ -26,11 +26,11 @@ export const Toggler = (props: MProps) => {
     const [showCspAlert, setCspShowAlert] = useState<boolean>(false);
     const [showCspAlertPopup, setCspShowAlertPopup] = useState<boolean>(false);
     useEffect(() => {
-        const {enablePluginForScreen, showScreenAlert} = checkScreenSize();
-        if (enablePluginForScreen === false) {
+        const {enablePluginForScreenFlag, showScreenAlertFlag} = checkScreenSize();
+        if (enablePluginForScreenFlag === false) {
             setHide(true);
         }
-        if (showScreenAlert) {
+        if (showScreenAlertFlag) {
             checkUserPreference();
         }
     }, []);

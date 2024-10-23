@@ -4,11 +4,11 @@ import {checkScreenSize} from "./util/checkScreenSize";
 
 let {enableUDAPlugin, udaBrowserVar, udaIdentifiedBrowser} = checkBrowser();
 
-const {enablePluginForScreen, showScreenAlert} = checkScreenSize();
+const {enablePluginForScreenFlag, showScreenAlertFlag} = checkScreenSize();
 
 if(enableUDAPlugin === false){
     console.log('Plugin disabled for browser: '+udaIdentifiedBrowser.name);
-} else if(enablePluginForScreen === false){
+} else if(enablePluginForScreenFlag === false){
     console.log('Plugin disabled due to lower resolution');
 } else {
     console.log('Browser Enabled');

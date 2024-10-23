@@ -3,21 +3,21 @@ import {getScreenSize} from "./getScreenSize";
 export const checkScreenSize = () => {
     const screenSize = getScreenSize();
 
-    let enablePluginForScreen = true;
-    let showScreenAlert = false;
+    let enablePluginForScreenFlag = true;
+    let showScreenAlertFlag = false;
 
     if(screenSize.resolution.height < 768) {
-        enablePluginForScreen = false;
+        enablePluginForScreenFlag = false;
     } else if(screenSize.resolution.height < 1080) {
-        showScreenAlert = true;
+        showScreenAlertFlag = true;
     }
 
     if(screenSize.resolution.width < 1366) {
-        enablePluginForScreen = false;
+        enablePluginForScreenFlag = false;
     } else if(screenSize.resolution.width < 1920) {
-        showScreenAlert = true;
+        showScreenAlertFlag = true;
     }
 
-    return {enablePluginForScreen, showScreenAlert}
+    return {enablePluginForScreenFlag: enablePluginForScreenFlag, showScreenAlertFlag: showScreenAlertFlag}
 
 }
