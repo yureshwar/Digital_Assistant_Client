@@ -6,7 +6,7 @@ export const gptPrompt = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer' // Replace with your actual API key
+                    'Authorization': 'Bearer ' // Replace with your actual API key
                 },
                 body: JSON.stringify({
                     model: "gpt-4o",
