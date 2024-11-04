@@ -40,31 +40,33 @@ export const fetchSearchResults = async (request?: {
       recordUserClickData("search", request.keyword);
     }
 
-    // Retrieve the user's session ID.
-    request.userSessionId = await getUserId();
-
-    // If additionalParams is null, delete it from the request object.
-    if (request.additionalParams === null) {
-      delete request.additionalParams;
-    }
-
-    // Construct the API call parameters based on whether additionalParams is present.
-    let parameters: any;
-    if (request.additionalParams != null) {
-      parameters = {
-        // Use the SearchWithPermissions endpoint when additionalParams is present.
-        url: REST.processArgs(ENDPOINT.SearchWithPermissions, request),
-        // Use the GET method.
-        method: "GET",
-      };
+  request.userSessionId = await getUserId();
+  if (request.additionalParams === null) {
+    delete request.additionalParams;
+  }
+  let parameters: any;
+  let url=ENDPOINT.Search;
+  if (request.additionalParams != null) {
+    if(global.UDAGlobalConfig.enableAISearch){
+      url = process.env.tokenUrl+ENDPOINT.AISearchWithPermissions;
     } else {
-      parameters = {
-        // Use the Search endpoint when additionalParams is not present.
-        url: REST.processArgs(ENDPOINT.Search, request),
-        // Use the GET method.
-        method: "GET",
-      };
+      url = ENDPOINT.SearchWithPermissions;
     }
+    parameters = {
+      url: REST.processArgs(url, request),
+      method: "GET",
+    };
+  } else {
+    if(global.UDAGlobalConfig.enableAISearch){
+      url = process.env.tokenUrl+ENDPOINT.AISearch;
+    } else {
+      url = ENDPOINT.Search;
+    }
+    parameters = {
+      url: REST.processArgs(url, request),
+      method: "GET",
+    };
+  }
 
     // Make the API call and return the result.
     return await REST.apiCal(parameters);
