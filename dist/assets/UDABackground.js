@@ -519,14 +519,15 @@ const CustomConfig = {
     enableUdaIcon: true,
     udaDivId: 'uda-nistapp-logo',
     enableForAllDomains: false,
-    enableSpeechToText: false,
-    enableSlowReplay: false,
+    enableSpeechToText: true,
+    enableSlowReplay: true,
     enableCustomIcon: false,
     customIcon: 'https://udan.nistapp.com/uda-logo.jpg',
     realm: "UDAN",
     clientId: "backend-service",
     clientSecret: "cXA2yFTq3ORQfrio2mGXttFaOTfvIC7N",
-    enableHidePanelAfterCompletion: false
+    enableHidePanelAfterCompletion: false,
+    enableAISearch: true
 };
 
 
@@ -553,8 +554,10 @@ const ENDPOINT = {
     GetSessionKey: `/user/getsessionkey`,
     CheckUserSession: `/user/checkusersession`,
     Search: `/search/all?query=#keyword#&domain=#domain#&page=#page#&userSessionId=#userSessionId#`,
+    AISearch: `search/all?query=#keyword#&domain=#domain#&page=#page#&userSessionId=#userSessionId#`,
     SearchWithPermissionsOld: `/clickevents/sequence/search?query=#keyword#&domain=#domain#&page=#page#&additionalParams=#additionalParams#`,
     SearchWithPermissions: `/search/withPermissions?query=#keyword#&domain=#domain#&page=#page#&additionalParams=#additionalParams#&userSessionId=#userSessionId#`,
+    AISearchWithPermissions: `search/all?query=#keyword#&domain=#domain#&page=#page#&additionalParams=#additionalParams#&userSessionId=#userSessionId#`,
     ProfanityCheck: `https://nistapp-content-moderator.cognitiveservices.azure.com/contentmoderator/moderate/v1.0/ProcessText/Screen`,
     SpecialNodes: `/clickevents`,
     Record: `/clickevents/clickednode`,
